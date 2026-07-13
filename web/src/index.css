@@ -3,6 +3,18 @@
   color: #1f2937;
 }
 
+.hp-center {
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  text-align: center;
+  color: #8f4256;
+  font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+  font-size: 1.1rem;
+  background: #fff7f9;
+}
+
 * {
   box-sizing: border-box;
 }

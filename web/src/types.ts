@@ -164,6 +164,16 @@ export interface InvitationView {
   user_agent: string | null
 }
 
+// Dữ liệu tổng hợp để render 1 thiệp (invitation + các quan hệ đã mở rộng).
+export interface RenderData {
+  invitation: Invitation
+  template: Template | null
+  events: EventItem[]
+  photos: Photo[]
+  gift_accounts: GiftAccount[]
+  variant?: InvitationVariant | null
+}
+
 export interface Schema {
   briefs: Brief[]
   brief_photos: BriefPhoto[]
