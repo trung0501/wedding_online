@@ -1,0 +1,30 @@
+# dependencies
+node_modules/
+
+# build output
+dist/
+web/dist/
+*.timestamp-*.mjs
+
+# env / secrets
+.env
+web/.env
+*.local
+
+# Directus runtime data
+data/
+directus/uploads/*
+!directus/uploads/.gitkeep
+directus/extensions/*
+!directus/extensions/.gitkeep
+
+# logs
+*.log
+npm-debug.log*
+yarn-error.log*
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

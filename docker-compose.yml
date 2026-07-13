@@ -1,0 +1,52 @@
+# Docker Compose — Postgres + Directus
+# Chạy:  docker compose up -d
+# Dừng:  docker compose down   (dữ liệu giữ trong ./data)
+
+services:
+  database:
+    image: postgres:16-alpine
+    container_name: wedding_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE}
+    volumes:
+      - ./data/database:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_DATABASE}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    # Không mở cổng Postgres ra ngoài — chỉ Directus trong mạng nội bộ truy cập.
+
+  directus:
+    image: directus/directus:11
+    container_name: wedding_directus
+    restart: unless-stopped
+    ports:
+      - "8055:8055"
+    volumes:
+      - ./directus/uploads:/directus/uploads
+      - ./directus/extensions:/directus/extensions
+    depends_on:
+      database:
+        condition: service_healthy
+    environment:
+      KEY: ${DIRECTUS_KEY}
+      SECRET: ${DIRECTUS_SECRET}
+
+      DB_CLIENT: pg
+      DB_HOST: database
+      DB_PORT: 5432
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+
+      ADMIN_EMAIL: ${ADMIN_EMAIL}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+
+      PUBLIC_URL: ${PUBLIC_URL}
+      CORS_ENABLED: "true"
+      CORS_ORIGIN: ${CORS_ORIGIN}
+      WEBSOCKETS_ENABLED: "true"
