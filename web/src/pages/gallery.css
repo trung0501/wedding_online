@@ -1,0 +1,232 @@
+.gl {
+  --gl-bg: #fff7f9;
+  --gl-primary: #c96b83;
+  --gl-primary-soft: #e9a6b5;
+  --gl-deep: #8f4256;
+  --gl-text: #5f4a50;
+  --gl-muted: #9c8890;
+  --gl-line: #f0d4dc;
+
+  min-height: 100vh;
+  background: var(--gl-bg);
+  color: var(--gl-text);
+  font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+}
+
+.gl-hero {
+  text-align: center;
+  padding: 72px 22px 40px;
+  background: linear-gradient(180deg, #fff0f4, var(--gl-bg));
+}
+
+.gl-eyebrow {
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  font-size: 12px;
+  color: var(--gl-primary);
+  margin: 0 0 12px;
+}
+
+.gl-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 600;
+  font-size: clamp(2rem, 6vw, 3.2rem);
+  color: var(--gl-deep);
+  margin: 0 0 14px;
+}
+
+.gl-sub {
+  max-width: 560px;
+  margin: 0 auto;
+  color: var(--gl-muted);
+}
+
+.gl-note {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--gl-muted);
+}
+
+.gl-grid {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 20px 22px 60px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 24px;
+}
+
+.gl-card {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  background: #fff;
+  border: 1px solid var(--gl-line);
+  border-radius: 18px;
+  overflow: hidden;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.gl-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 40px rgba(201, 107, 131, 0.18);
+}
+
+.gl-thumb {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  background: #fbe9ef;
+  overflow: hidden;
+}
+
+.gl-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.gl-thumb-ph {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, #f6c9d6, #e9a6b5);
+  padding: 20px;
+  text-align: center;
+}
+
+.gl-thumb-ph span {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: 1.6rem;
+  color: #fff;
+  text-shadow: 0 2px 12px rgba(143, 66, 86, 0.4);
+}
+
+.gl-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.gl-badge-hot {
+  background: #e0556f;
+}
+
+.gl-badge-new {
+  background: #6ba368;
+}
+
+.gl-card-body {
+  padding: 18px 18px 22px;
+}
+
+.gl-card-name {
+  font-family: 'Playfair Display', serif;
+  font-weight: 600;
+  color: var(--gl-deep);
+  margin: 0 0 6px;
+  font-size: 1.25rem;
+}
+
+.gl-card-desc {
+  color: var(--gl-muted);
+  font-size: 0.9rem;
+  margin: 0 0 14px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.gl-card-cta {
+  color: var(--gl-primary);
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.gl-footer {
+  text-align: center;
+  padding: 30px 20px;
+  color: var(--gl-muted);
+  border-top: 1px solid var(--gl-line);
+}
+
+/* ---------- PREVIEW ---------- */
+.tp-bar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 18px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid #f0d4dc;
+}
+
+.tp-back {
+  color: #8f4256;
+  text-decoration: none;
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-size: 0.95rem;
+}
+
+.tp-name {
+  font-family: 'Playfair Display', serif;
+  color: #8f4256;
+  font-weight: 600;
+}
+
+.tp-cta {
+  padding: 9px 20px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #c96b83, #e9a6b5);
+  color: #fff;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  font-family: 'Be Vietnam Pro', sans-serif;
+}
+
+/* ---------- ORDER PLACEHOLDER ---------- */
+.gl-order {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: #fff7f9;
+  font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+}
+
+.gl-order-card {
+  max-width: 520px;
+  background: #fff;
+  border: 1px solid #f0d4dc;
+  border-radius: 20px;
+  padding: 40px;
+  text-align: center;
+}
+
+.gl-order-title {
+  font-family: 'Playfair Display', serif;
+  color: #8f4256;
+  margin: 6px 0 16px;
+}
+
+.gl-order-mau {
+  color: #5f4a50;
+}
+
+.gl-order-note {
+  color: #9c8890;
+  margin: 12px 0 24px;
+}

@@ -56,6 +56,7 @@ export interface Template {
   is_active: boolean
   sort: number
   price: number
+  demo_slug: string | null
 }
 
 export interface Invitation {

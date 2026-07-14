@@ -1,4 +1,6 @@
+/* CSS nền dùng chung cho mọi mẫu. Màu & font do BaseTemplate set qua biến --hp-* inline (theme). */
 .hp {
+  /* Giá trị mặc định (fallback) — theme sẽ ghi đè qua inline style */
   --hp-bg: #fff7f9;
   --hp-cream: #fffdfb;
   --hp-primary: #c96b83;
@@ -7,8 +9,10 @@
   --hp-text: #5f4a50;
   --hp-muted: #9c8890;
   --hp-line: #f0d4dc;
+  --hp-heading: 'Playfair Display', Georgia, serif;
+  --hp-body: 'Be Vietnam Pro', system-ui, sans-serif;
 
-  font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+  font-family: var(--hp-body);
   color: var(--hp-text);
   background: var(--hp-bg);
   line-height: 1.65;
@@ -22,7 +26,7 @@
 .hp h1,
 .hp h2,
 .hp h3 {
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: var(--hp-heading);
   font-weight: 600;
   margin: 0;
 }
@@ -91,7 +95,7 @@
 
 .hp-cd-num {
   display: block;
-  font-family: 'Playfair Display', serif;
+  font-family: var(--hp-heading);
   font-size: 1.7rem;
   font-weight: 600;
 }
@@ -120,7 +124,6 @@
   color: var(--hp-primary-soft);
   margin: 10px 0 26px;
   font-size: 1.1rem;
-  position: relative;
 }
 
 .hp-divider::before,
@@ -182,7 +185,7 @@
   border: 1px solid var(--hp-line);
   border-radius: 18px;
   padding: 28px 22px;
-  box-shadow: 0 12px 30px rgba(201, 107, 131, 0.08);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.05);
 }
 
 .hp-event-title {
@@ -218,17 +221,16 @@
   border-radius: 999px;
   background: linear-gradient(135deg, var(--hp-primary), var(--hp-primary-soft));
   color: #fff;
-  font-family: 'Be Vietnam Pro', sans-serif;
+  font-family: var(--hp-body);
   font-size: 0.95rem;
   font-weight: 500;
   text-decoration: none;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
-  box-shadow: 0 8px 20px rgba(201, 107, 131, 0.3);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
 
 .hp-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 26px rgba(201, 107, 131, 0.4);
 }
 
 .hp-btn:disabled {
@@ -269,7 +271,7 @@
 
 /* ---------- RSVP ---------- */
 .hp-rsvp {
-  background: linear-gradient(180deg, #fff0f4, #fff7f9);
+  background: color-mix(in srgb, var(--hp-primary-soft) 22%, #fff);
   max-width: none;
 }
 
@@ -301,7 +303,7 @@
 .hp-input:focus {
   outline: none;
   border-color: var(--hp-primary-soft);
-  box-shadow: 0 0 0 3px rgba(233, 166, 181, 0.25);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--hp-primary-soft) 35%, transparent);
 }
 
 .hp-rsvp-row {
@@ -324,7 +326,7 @@
 
 .hp-choice.active {
   border-color: var(--hp-primary);
-  background: #fff0f4;
+  background: color-mix(in srgb, var(--hp-primary-soft) 18%, #fff);
   color: var(--hp-deep);
 }
 
@@ -397,7 +399,7 @@
 }
 
 .hp-footer-names {
-  font-family: 'Playfair Display', serif;
+  font-family: var(--hp-heading);
   font-style: italic;
   font-size: 1.8rem;
   margin: 0 0 8px;
@@ -411,6 +413,120 @@
   background: rgba(255, 255, 255, 0.15);
   font-size: 0.8rem;
   letter-spacing: 0.05em;
+}
+
+/* ---------- HERO: SPLIT ---------- */
+.hp-hero-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 0;
+  min-height: 100svh;
+  background: var(--hp-bg);
+  color: var(--hp-text);
+}
+
+.hp-split-img {
+  background-color: var(--hp-primary-soft);
+  background-size: cover;
+  background-position: center;
+  min-height: 320px;
+}
+
+.hp-split-info {
+  display: grid;
+  place-items: center;
+  padding: 40px 24px;
+  background: var(--hp-cream);
+}
+
+.hp-hero-split .hp-names,
+.hp-hero-minimal .hp-names {
+  color: var(--hp-deep);
+  text-shadow: none;
+}
+
+.hp-hero-split .hp-eyebrow,
+.hp-hero-minimal .hp-eyebrow {
+  color: var(--hp-primary);
+}
+
+.hp-hero-split .hp-hero-date,
+.hp-hero-minimal .hp-hero-date {
+  color: var(--hp-text);
+}
+
+.hp-hero-split .hp-cd-item,
+.hp-hero-minimal .hp-cd-item {
+  background: var(--hp-bg);
+  border-color: var(--hp-line);
+  color: var(--hp-deep);
+}
+
+/* ---------- HERO: MINIMAL ---------- */
+.hp-hero-minimal {
+  background: linear-gradient(160deg, var(--hp-cream), var(--hp-bg));
+  color: var(--hp-text);
+  padding: 40px 20px;
+}
+
+.hp-minimal-frame {
+  border: 1px solid var(--hp-primary-soft);
+  border-radius: 4px;
+  padding: 48px 32px;
+  max-width: 680px;
+  position: relative;
+}
+
+.hp-minimal-frame::before {
+  content: '';
+  position: absolute;
+  inset: 8px;
+  border: 1px solid var(--hp-line);
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+/* ---------- EVENTS: TIMELINE ---------- */
+.hp-timeline {
+  max-width: 560px;
+  margin: 0 auto;
+  text-align: left;
+  position: relative;
+  padding-left: 28px;
+}
+
+.hp-timeline::before {
+  content: '';
+  position: absolute;
+  left: 7px;
+  top: 6px;
+  bottom: 6px;
+  width: 2px;
+  background: var(--hp-line);
+}
+
+.hp-tl-item {
+  position: relative;
+  margin-bottom: 22px;
+}
+
+.hp-tl-dot {
+  position: absolute;
+  left: -28px;
+  top: 8px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--hp-primary);
+  border: 3px solid var(--hp-cream);
+  box-shadow: 0 0 0 1px var(--hp-primary-soft);
+}
+
+.hp-tl-card {
+  background: var(--hp-cream);
+  border: 1px solid var(--hp-line);
+  border-radius: 14px;
+  padding: 18px 20px;
 }
 
 @keyframes hp-fade {
@@ -434,5 +550,11 @@
   }
   .hp-section {
     padding: 48px 18px;
+  }
+  .hp-hero-split {
+    grid-template-columns: 1fr;
+  }
+  .hp-split-img {
+    min-height: 42svh;
   }
 }

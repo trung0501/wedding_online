@@ -2,6 +2,19 @@ import { readItems } from '@directus/sdk'
 import { directus } from './directus'
 import type { RenderData, Invitation, Template } from '../types'
 
+// Danh sách mẫu đang mở bán (cho trang thư viện mẫu).
+export async function fetchTemplates(): Promise<Template[]> {
+  return await directus.request(
+    readItems('templates', { filter: { is_active: { _eq: true } }, sort: ['sort'], fields: ['*'] }),
+  )
+}
+
+// Một mẫu theo slug (cho trang preview).
+export async function fetchTemplateBySlug(slug: string): Promise<Template | null> {
+  const r = await directus.request(readItems('templates', { filter: { slug: { _eq: slug } }, limit: 1, fields: ['*'] }))
+  return r[0] ?? null
+}
+
 // Đọc thiệp public theo slug của variant. Vì schema chỉ có quan hệ M2O (chưa tạo alias O2M),
 // ta truy vấn tách theo invitation id — chạy tốt mà không cần alias, dễ hiểu.
 export async function fetchInvitationBySlug(slug: string): Promise<RenderData | null> {
