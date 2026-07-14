@@ -230,3 +230,117 @@
   color: #9c8890;
   margin: 12px 0 24px;
 }
+
+/* ---------- INTAKE FORM ---------- */
+.ik {
+  min-height: 100vh;
+  background: #fff7f9;
+  color: #5f4a50;
+  font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+  padding: 40px 22px 64px;
+}
+
+.ik-head {
+  max-width: 640px;
+  margin: 0 auto 28px;
+  text-align: center;
+}
+
+.ik-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  color: #8f4256;
+  font-size: clamp(1.8rem, 5vw, 2.6rem);
+  margin: 14px 0 10px;
+}
+
+.ik-sub {
+  color: #9c8890;
+}
+
+.ik-form {
+  max-width: 640px;
+  margin: 0 auto;
+  background: #fff;
+  border: 1px solid #f0d4dc;
+  border-radius: 20px;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ik-row {
+  display: flex;
+  gap: 16px;
+}
+
+.ik-row .ik-group {
+  flex: 1;
+}
+
+.ik-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ik-label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #6b5a5f;
+}
+
+.ik-input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #f0d4dc;
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 1rem;
+  color: #5f4a50;
+  background: #fffdfb;
+}
+
+.ik-input:focus {
+  outline: none;
+  border-color: #e9a6b5;
+  box-shadow: 0 0 0 3px rgba(233, 166, 181, 0.25);
+}
+
+.ik-btn {
+  margin-top: 6px;
+  border: none;
+  cursor: pointer;
+  padding: 14px 26px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #c96b83, #e9a6b5);
+  color: #fff;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 500;
+  box-shadow: 0 8px 20px rgba(201, 107, 131, 0.3);
+}
+
+.ik-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.ik-err {
+  color: #c0392b;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.ik-note {
+  color: #9c8890;
+  font-size: 0.82rem;
+  margin: 4px 0 0;
+}
+
+@media (max-width: 520px) {
+  .ik-row {
+    flex-direction: column;
+    gap: 16px;
+  }
+}

@@ -59,7 +59,7 @@ export default function GalleryPage() {
       )}
 
       <footer className="gl-footer">
-        <p>Thiệp Cưới Online · HVN</p>
+        <p>Thiệp Cưới Online</p>
       </footer>
     </div>
   )

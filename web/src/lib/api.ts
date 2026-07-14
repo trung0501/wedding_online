@@ -1,6 +1,11 @@
-import { readItems } from '@directus/sdk'
+import { readItems, createItem } from '@directus/sdk'
 import { directus } from './directus'
-import type { RenderData, Invitation, Template } from '../types'
+import type { RenderData, Invitation, Template, Brief } from '../types'
+
+// Gửi form intake → tạo bản ghi briefs (status mặc định 'new').
+export async function createBrief(payload: Partial<Brief>) {
+  return await directus.request(createItem('briefs', payload))
+}
 
 // Danh sách mẫu đang mở bán (cho trang thư viện mẫu).
 export async function fetchTemplates(): Promise<Template[]> {

@@ -4,7 +4,7 @@ import { resolveTemplate } from './templates/registry'
 import InvitationPage from './pages/InvitationPage'
 import GalleryPage from './pages/GalleryPage'
 import TemplatePreview from './pages/TemplatePreview'
-import OrderPlaceholder from './pages/OrderPlaceholder'
+import IntakePage from './pages/IntakePage'
 
 function DemoHost() {
   const Template = resolveTemplate(sampleInvitation.template?.component_key)
@@ -17,7 +17,7 @@ export default function App() {
       <Route path="/" element={<GalleryPage />} />
       <Route path="/demo" element={<DemoHost />} />
       <Route path="/mau/:slug" element={<TemplatePreview />} />
-      <Route path="/dat-thiep" element={<OrderPlaceholder />} />
+      <Route path="/dat-thiep" element={<IntakePage />} />
       <Route path="/:slug" element={<InvitationPage />} />
     </Routes>
   )
