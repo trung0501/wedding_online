@@ -52,7 +52,7 @@ const ALLOWED = {
   briefs: ['create'],
   brief_photos: ['create'],
   rsvps: ['create'],
-  guestbook: ['create'],
+  guestbook: ['create', 'read'], // read phải kèm filter status = approved
   templates: ['read'],
   template_categories: ['read'],
   invitations: ['read'],
@@ -70,6 +70,14 @@ const FORBIDDEN = ['orders', 'guests', 'invitation_views', 'directus_users']
 const MUST_FILTER = {
   invitations: 'status = published',
   templates: 'is_active = true',
+  guestbook: 'status = approved',
+  // Không filter thì GET /files liệt kê TOÀN BỘ file: ảnh khách khác, thiệp draft, QR ngân hàng.
+  directus_files: 'folder = Public',
+  // Bảng con: che thiệp draft thôi chưa đủ, ruột của nó cũng phải che.
+  invitation_variants: 'invitation.status = published',
+  events: 'invitation.status = published',
+  photos: 'invitation.status = published',
+  gift_accounts: 'invitation.status = published',
 }
 
 // Field nhạy cảm, không được nằm trong danh sách field public đọc được.

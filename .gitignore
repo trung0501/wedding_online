@@ -18,6 +18,10 @@ directus/uploads/*
 directus/extensions/*
 !directus/extensions/.gitkeep
 
+# bản sao lưu phân quyền (sinh tự động, có dấu thời gian)
+directus/permissions-backup-*.json
+directus/permissions-current.json
+
 # logs
 *.log
 npm-debug.log*
