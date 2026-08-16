@@ -23,7 +23,7 @@ export default function GalleryPage() {
   return (
     <div className="gl">
       <header className="gl-hero">
-        <p className="gl-eyebrow">Thiệp cưới online 2026</p>
+        <p className="gl-eyebrow">Thiệp cưới Online</p>
         <h1 className="gl-title">Chọn mẫu thiệp cưới</h1>
         <p className="gl-sub">
           Bộ sưu tập thiệp mời điện tử nhiều phong cách. Xem thử trực tiếp, ưng ý rồi để chúng tôi hoàn thiện cho bạn.
@@ -31,7 +31,7 @@ export default function GalleryPage() {
       </header>
 
       {state === 'loading' && <p className="gl-note">Đang tải mẫu…</p>}
-      {state === 'error' && <p className="gl-note">Không tải được danh sách mẫu. Vui lòng thử lại.</p>}
+      {state === 'error' && <p className="gl-note">Không tải được Thiệp mẫu. Vui lòng thử lại.</p>}
       {state === 'ok' && templates.length === 0 && <p className="gl-note">Chưa có mẫu nào được mở bán.</p>}
 
       {state === 'ok' && templates.length > 0 && (

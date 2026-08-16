@@ -46,8 +46,8 @@ export default function IntakePage() {
           <p className="gl-eyebrow">Đã nhận thông tin</p>
           <h1 className="gl-order-title">Cảm ơn {form.contact_name}! ♥</h1>
           <p className="gl-order-note">
-            Chúng tôi đã nhận yêu cầu của bạn và sẽ liên hệ sớm để hoàn thiện thiệp. Bạn có thể gửi thêm ảnh cưới qua Zalo/Facebook khi
-            được liên hệ.
+            Chúng tôi đã nhận được yêu cầu của Quý khách và sẽ liên hệ sớm nhất để hoàn thiện thiệp cưới. Quý khách có thể gửi
+            thêm ảnh cưới qua Zalo/Facebook khi chúng tôi liên hệ.
           </p>
           <Link className="tp-cta" to="/">
             ← Về thư viện mẫu
@@ -92,16 +92,16 @@ export default function IntakePage() {
         </div>
         <div className="ik-row">
           <div className="ik-group">
-            <label className="ik-label">Tên chú rể</label>
-            <input className="ik-input" value={form.groom_name} onChange={set('groom_name')} />
-          </div>
-          <div className="ik-group">
             <label className="ik-label">Tên cô dâu</label>
             <input className="ik-input" value={form.bride_name} onChange={set('bride_name')} />
           </div>
+          <div className="ik-group">
+            <label className="ik-label">Tên chú rể</label>
+            <input className="ik-input" value={form.groom_name} onChange={set('groom_name')} />
+          </div>
         </div>
         <div className="ik-group">
-          <label className="ik-label">Thông tin lễ / tiệc (ngày giờ, địa điểm)</label>
+          <label className="ik-label">Thông tin lễ / tiệc (Ngày giờ, địa điểm)</label>
           <textarea className="ik-input" rows={4} value={form.event_info} onChange={set('event_info')} placeholder="VD: Lễ vu quy 9h ngày 20/12/2026 tại nhà gái…; Tiệc cưới 18h cùng ngày tại…" />
         </div>
         <div className="ik-group">
