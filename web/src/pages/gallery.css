@@ -79,7 +79,11 @@
   overflow: hidden;
 }
 
+/* Ảnh nằm đè lên ô chữ placeholder. Ảnh lỗi → JS ẩn <img>, placeholder lộ ra. */
 .gl-thumb img {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
   width: 100%;
   height: 100%;
   object-fit: cover;

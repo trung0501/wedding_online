@@ -7,6 +7,16 @@ import './gallery.css'
 
 const badgeText: Record<string, string> = { hot: 'Hot', new: 'Mới' }
 
+// Thứ tự ưu tiên ảnh preview:
+//   1. templates.thumbnail trong Directus (nhân viên tự upload để ghi đè)
+//   2. ảnh tĩnh web/public/thumbs/<component_key>.jpg (sinh bởi tools/gen-thumbnails.mjs)
+//   3. ô chữ placeholder
+function thumbSrc(t: Template): string {
+  if (t.thumbnail) return assetUrl(t.thumbnail)
+  if (t.component_key) return `/thumbs/${t.component_key}.jpg`
+  return ''
+}
+
 export default function GalleryPage() {
   const [templates, setTemplates] = useState<Template[]>([])
   const [state, setState] = useState<'loading' | 'ok' | 'error'>('loading')
@@ -39,13 +49,18 @@ export default function GalleryPage() {
           {templates.map((t) => (
             <Link className="gl-card" to={`/mau/${t.slug}`} key={t.id}>
               <div className="gl-thumb">
-                {t.thumbnail ? (
-                  <img src={assetUrl(t.thumbnail)} alt={t.name} loading="lazy" />
-                ) : (
-                  <div className="gl-thumb-ph">
-                    <span>{t.name}</span>
-                  </div>
-                )}
+                {thumbSrc(t) ? (
+                  <img
+                    src={thumbSrc(t)}
+                    alt={t.name}
+                    loading="lazy"
+                    // Ảnh tĩnh chưa được sinh → ẩn <img>, để lộ ô chữ placeholder bên dưới.
+                    onError={(e) => (e.currentTarget.style.display = 'none')}
+                  />
+                ) : null}
+                <div className="gl-thumb-ph">
+                  <span>{t.name}</span>
+                </div>
                 {t.badge && t.badge !== 'none' && <span className={`gl-badge gl-badge-${t.badge}`}>{badgeText[t.badge]}</span>}
               </div>
               <div className="gl-card-body">

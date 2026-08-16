@@ -423,6 +423,9 @@
   min-height: 100svh;
   background: var(--hp-bg);
   color: var(--hp-text);
+  /* Bắt buộc: .hp-hero đặt place-items:center khiến 2 cột co lại theo nội dung
+     → cột ảnh (không có nội dung) bị co về width 0 và biến mất. */
+  place-items: stretch;
 }
 
 .hp-split-img {
