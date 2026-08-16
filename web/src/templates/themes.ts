@@ -98,3 +98,43 @@ export const goldTheme: Theme = {
   eventsVariant: 'timeline',
   order: ['story', 'album', 'events', 'gift', 'rsvp'],
 }
+
+// Tổ hợp bố cục split + timeline (chưa mẫu nào dùng).
+export const lavenderTheme: Theme = {
+  bg: '#faf7fd',
+  cream: '#fffdff',
+  primary: '#8a6bb1',
+  primarySoft: '#c4addf',
+  deep: '#573a80',
+  text: '#544b60',
+  muted: '#948ca4',
+  line: '#e6dcf2',
+  heroOverlay: 'rgba(66,44,92,.28), rgba(66,44,92,.50)',
+  heading: "'Cormorant Garamond', Georgia, serif",
+  body: "'Be Vietnam Pro', system-ui, sans-serif",
+  motif: '❀',
+  eyebrow: 'Chúng mình cưới',
+  heroVariant: 'split',
+  eventsVariant: 'timeline',
+  order: ['events', 'story', 'album', 'rsvp', 'gift'],
+}
+
+// Tổ hợp bố cục minimal + cards (chưa mẫu nào dùng).
+export const burgundyTheme: Theme = {
+  bg: '#fbf6f4',
+  cream: '#fffcfa',
+  primary: '#8c2f3b',
+  primarySoft: '#c58a7d',
+  deep: '#5a1a24',
+  text: '#4e3c39',
+  muted: '#98827e',
+  line: '#ebd9d3',
+  heroOverlay: 'rgba(58,18,26,.38), rgba(58,18,26,.58)',
+  heading: "'Lora', Georgia, serif",
+  body: "'Be Vietnam Pro', system-ui, sans-serif",
+  motif: '❧',
+  eyebrow: 'Trân trọng báo tin',
+  heroVariant: 'minimal',
+  eventsVariant: 'cards',
+  order: ['story', 'events', 'album', 'gift', 'rsvp'],
+}

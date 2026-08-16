@@ -40,6 +40,8 @@ const TEMPLATES = [
   { name: 'Đỏ Truyền Thống 01', slug: 'do-truyen-thong-01', component_key: 'do-truyen-thong-01', badge: 'hot', sort: 2, description: 'Sắc đỏ son Á Đông, chữ Hỷ, trang trọng cổ điển.' },
   { name: 'Xanh Thiên Nhiên 01', slug: 'xanh-thien-nhien-01', component_key: 'xanh-thien-nhien-01', badge: 'none', sort: 3, description: 'Xanh lá tươi mát, phong cách vườn cưới ngoài trời.' },
   { name: 'Kem Gold 01', slug: 'kem-gold-01', component_key: 'kem-gold-01', badge: 'new', sort: 4, description: 'Nền kem điểm vàng champagne, sang trọng hiện đại.' },
+  { name: 'Tím Lavender 01', slug: 'tim-lavender-01', component_key: 'tim-lavender-01', badge: 'new', sort: 5, description: 'Tím oải hương dịu dàng, ảnh bìa nửa trang, dòng thời gian sự kiện.' },
+  { name: 'Burgundy Vintage 01', slug: 'burgundy-vintage-01', component_key: 'burgundy-vintage-01', badge: 'none', sort: 6, description: 'Đỏ rượu vang trầm ấm, khung viền tối giản, hoài cổ tinh tế.' },
 ]
 
 async function main() {
