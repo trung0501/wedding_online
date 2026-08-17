@@ -1,14 +1,27 @@
 // ============================================================
 //  Seed danh mục MẪU THIỆP vào Directus (idempotent theo slug).
-//  Thêm/bổ sung các mẫu để hiện trong trang thư viện mẫu.
 //
-//  CHẠY (Directus đang chạy):
-//    node --env-file=.env directus/seed-templates.mjs
+//  Dữ liệu lấy từ directus/templates.json — đó là nguồn sự thật duy nhất.
+//  Sửa tên/mô tả mẫu trong admin? Chạy export-templates.mjs để kéo về file
+//  đó, đừng sửa tay hai nơi.
+//
+//  CHẠY (Directus đang chạy, từ thư mục gốc):
+//    node --env-file=.env directus/seed-templates.mjs            # chỉ tạo mẫu còn thiếu
+//    node --env-file=.env directus/seed-templates.mjs --update   # tạo mới + cập nhật mẫu đã có
+//    node --env-file=.env directus/seed-templates.mjs --dry-run  # xem trước, không ghi
+//
+//  component_key phải khớp web/src/templates/registry.ts.
 // ============================================================
+
+import { readFileSync } from 'node:fs'
 
 const URL = (process.env.DIRECTUS_URL || process.env.PUBLIC_URL || 'http://localhost:8055').replace(/\/$/, '')
 const EMAIL = process.env.ADMIN_EMAIL
 const PASSWORD = process.env.ADMIN_PASSWORD
+const DATA = 'directus/templates.json'
+
+const UPDATE = process.argv.includes('--update')
+const DRY = process.argv.includes('--dry-run')
 
 async function api(path, { method = 'GET', body, token } = {}) {
   const res = await fetch(URL + path, {
@@ -34,31 +47,76 @@ async function getToken() {
   return r.data.access_token
 }
 
-// component_key phải khớp registry.ts ở frontend.
-const TEMPLATES = [
-  { name: 'Hồng Pastel 01', slug: 'hong-pastel-01', component_key: 'hong-pastel-01', badge: 'new', sort: 1, description: 'Tông hồng pastel lãng mạn, nữ tính, ngọt ngào.' },
-  { name: 'Đỏ Truyền Thống 01', slug: 'do-truyen-thong-01', component_key: 'do-truyen-thong-01', badge: 'hot', sort: 2, description: 'Sắc đỏ son Á Đông, chữ Hỷ, trang trọng cổ điển.' },
-  { name: 'Xanh Thiên Nhiên 01', slug: 'xanh-thien-nhien-01', component_key: 'xanh-thien-nhien-01', badge: 'none', sort: 3, description: 'Xanh lá tươi mát, phong cách vườn cưới ngoài trời.' },
-  { name: 'Kem Gold 01', slug: 'kem-gold-01', component_key: 'kem-gold-01', badge: 'new', sort: 4, description: 'Nền kem điểm vàng champagne, sang trọng hiện đại.' },
-  { name: 'Tím Lavender 01', slug: 'tim-lavender-01', component_key: 'tim-lavender-01', badge: 'new', sort: 5, description: 'Tím oải hương dịu dàng, ảnh bìa nửa trang, dòng thời gian sự kiện.' },
-  { name: 'Burgundy Vintage 01', slug: 'burgundy-vintage-01', component_key: 'burgundy-vintage-01', badge: 'none', sort: 6, description: 'Đỏ rượu vang trầm ấm, khung viền tối giản, hoài cổ tinh tế.' },
-]
+function loadTemplates() {
+  let raw
+  try {
+    raw = readFileSync(DATA, 'utf8')
+  } catch {
+    throw new Error(`Không đọc được ${DATA}. Chạy script từ thư mục gốc dự án.`)
+  }
+  const rows = JSON.parse(raw)
+  const seen = new Set()
+  for (const t of rows) {
+    if (!t.slug || !t.component_key) throw new Error(`Mẫu thiếu slug hoặc component_key: ${JSON.stringify(t)}`)
+    if (seen.has(t.slug)) throw new Error(`Slug bị trùng trong ${DATA}: ${t.slug}`)
+    seen.add(t.slug)
+  }
+  return rows
+}
+
+// So sánh nông, chỉ trên các khoá có trong file JSON.
+function diffFields(existing, wanted) {
+  const changed = []
+  for (const [k, v] of Object.entries(wanted)) {
+    const a = existing[k] ?? null
+    const b = v ?? null
+    if (JSON.stringify(a) !== JSON.stringify(b)) changed.push([k, a, b])
+  }
+  return changed
+}
 
 async function main() {
   console.log(`▶ Directus: ${URL}`)
-  const token = await getToken()
+  if (DRY) console.log('▶ CHẾ ĐỘ XEM TRƯỚC — không ghi gì\n')
 
-  for (const t of TEMPLATES) {
-    const existed = await api(`/items/templates?filter[slug][_eq]=${t.slug}&limit=1`, { token })
-    if (existed.data?.length) {
-      console.log(`• bỏ qua (đã có): ${t.slug}`)
+  const templates = loadTemplates()
+  console.log(`▶ ${templates.length} mẫu trong ${DATA}\n`)
+
+  const token = await getToken()
+  let created = 0, updated = 0, skipped = 0
+
+  for (const t of templates) {
+    const existed = await api(`/items/templates?filter[slug][_eq]=${encodeURIComponent(t.slug)}&limit=1&fields=*`, { token })
+    const row = existed.data?.[0]
+
+    if (!row) {
+      console.log(`+ TẠO   ${t.slug} → "${t.name}"`)
+      if (!DRY) await api('/items/templates', { method: 'POST', token, body: t })
+      created++
       continue
     }
-    await api('/items/templates', { method: 'POST', token, body: { ...t, is_active: true, price: 0 } })
-    console.log(`✓ tạo template: ${t.slug}`)
+
+    const changed = diffFields(row, t)
+    if (!changed.length) {
+      skipped++
+      continue
+    }
+
+    if (!UPDATE) {
+      console.log(`• LỆCH  ${t.slug} — ${changed.map(([k]) => k).join(', ')}  (thêm --update để đồng bộ)`)
+      skipped++
+      continue
+    }
+
+    console.log(`~ SỬA   ${t.slug}`)
+    for (const [k, a, b] of changed) console.log(`          ${k}: ${JSON.stringify(a)} → ${JSON.stringify(b)}`)
+    if (!DRY) await api(`/items/templates/${row.id}`, { method: 'PATCH', token, body: t })
+    updated++
   }
 
-  console.log('\n✅ Seed template xong. Mở lại trang thư viện mẫu để xem.')
+  console.log(`\n▶ Tạo ${created} · Sửa ${updated} · Giữ nguyên ${skipped}`)
+  if (DRY) console.log('\n▶ Mới chỉ xem trước. Bỏ --dry-run để áp dụng thật.')
+  else console.log('\n✅ Xong. Mở lại trang thư viện mẫu để xem.')
 }
 
 main().catch((err) => {

@@ -60,8 +60,21 @@ Chạy từ thư mục gốc, Directus phải đang bật. Cả ba script đều
 
 ```powershell
 node --env-file=.env directus/bootstrap-schema.mjs   # 14 collections + relations
-node --env-file=.env directus/seed-templates.mjs     # danh mục mẫu thiệp
+node --env-file=.env directus/seed-templates.mjs     # danh mục mẫu thiệp (từ templates.json)
 node --env-file=.env directus/add-o2m-aliases.mjs    # gom quan hệ con vào trang cha trong admin
+node --env-file=.env directus/setup-permissions.mjs  # siết quyền Public role
+```
+
+Kiểm tra lại quyền bất cứ lúc nào (chỉ đọc): `node --env-file=.env directus/audit-permissions.mjs`
+
+### 4. Khi sửa mẫu thiệp trong admin
+
+`directus/templates.json` là **nguồn sự thật** cho danh mục mẫu. Sửa tên/mô tả/thứ tự trong
+Directus xong thì kéo về file rồi commit, để VPS không bị lệch:
+
+```powershell
+node --env-file=.env directus/export-templates.mjs        # Directus → templates.json
+node --env-file=.env directus/seed-templates.mjs --update # templates.json → Directus
 ```
 
 ## Đường dẫn chính
