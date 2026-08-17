@@ -17,6 +17,7 @@ Bổ sung một năng lực hoàn toàn mới và vá vài chỗ tài liệu ch�
 - **Mục 6** — `guestbook.create` dùng `presets` để Directus tự gán `status = approved`.
 - **Mục 7** — biến môi trường cho ảnh, và cách chạy script quản trị trỏ lên VPS.
 - **Mục 3.2** — tường lời chúc công khai trên thiệp (đã làm, v3 còn ghi là chưa).
+- **Mục 7.5 (mới)** — `web/server.js`: chèn thẻ Open Graph để share Zalo/Facebook ra ảnh và tên cặp đôi. Frontend chuyển từ static site sang Node app.
 
 ## Thay đổi v2 → v3
 
@@ -492,6 +493,26 @@ Biến cho ảnh (có mặc định trong `docker-compose.yml`, chỉ khai khi m
 
 > Không có các giới hạn này, người lạ gọi `?width=1`, `?width=2`… hàng nghìn lần sẽ ép server resize liên tục và **làm đầy ổ đĩa bằng file cache rác**.
 
+### 7.5 Thẻ Open Graph — `web/server.js`
+
+Zalo và Facebook **không chạy JavaScript**. Chúng tải HTML thô rồi đọc thẻ `<meta>`. App React chỉ có một `index.html` với tiêu đề cố định, nội dung thiệp do JS dựng sau — bot không bao giờ thấy. Dán link thiệp lên Zalo sẽ ra "Thiệp Cưới Online", không ảnh, không tên.
+
+`web/server.js` phát bản build và **chèn thẻ OG trước khi gửi**: `/:slug` → hỏi Directus lấy tên cặp đôi, ngày cưới, ảnh bìa. Không dùng thư viện ngoài, chỉ `node:http`.
+
+| | Trước | Sau |
+| --- | --- | --- |
+| Kiểu app trên Coolify | Static | **Node.js** |
+| Start command | — | `node server.js` |
+| RAM | ~0 | ~60MB |
+
+Biến môi trường thêm: **`DIRECTUS_INTERNAL_URL`** (`http://directus:8055`) để server gọi Directus qua mạng nội bộ. Ảnh OG vẫn dùng `VITE_DIRECTUS_URL` vì Zalo tải ảnh từ internet.
+
+Ba chốt an toàn: dữ liệu khách nhập được **escape** trước khi chèn vào HTML; thiệp chưa `published` **không** lộ tên qua thẻ OG; Directus lỗi hay chậm quá 4 giây thì **vẫn trả trang bình thường**, chỉ mất thẻ OG.
+
+Kiểm bằng [Facebook Sharing Debugger](https://developers.facebook.com/tools/debug/) sau khi lên domain thật.
+
+> Chỉ hoạt động ở bản build (`npm run build && npm start`). Chạy `npm run dev` thì Vite phục vụ, không có thẻ OG — đúng như vậy, không phải lỗi.
+
 ### 7.4 Chạy script quản trị trỏ lên VPS
 
 Script nói chuyện với Directus **qua HTTP**, nên **không cần cài Node trên VPS**. Tạo `.env.production` **trên máy làm việc** (không phải trên server):
@@ -688,7 +709,7 @@ node --env-file=.env directus/seed-templates.mjs --update # file → Directus
 | 3 | ~~Lưu bút chưa có UI~~ → **đã làm ở v4** (tường lời chúc dưới form RSVP) | — |
 | 4 | 3 link variant + `display_config` chưa được renderer dùng | P7 |
 | 5 | Cá nhân hoá `?g={token}` chưa làm | P7 |
-| 6 | SEO/OG cho từng link — share Zalo/Facebook chưa có ảnh và mô tả riêng | P7, ảnh hưởng trực tiếp tới cảm nhận của khách |
+| 6 | ~~SEO/OG cho từng link~~ → **đã làm ở v4** (`web/server.js`, mục 7.5) | — |
 | 7 | `invitation_views` chưa ghi nhận | Analytics |
 | 8 | Directus Flows thông báo brief/RSVP mới | Vận hành thủ công |
 | 9 | Tài liệu deploy Coolify | Viết khi chốt tên miền |

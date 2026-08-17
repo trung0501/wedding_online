@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
-    "thumbs": "npm run build && node tools/gen-thumbnails.mjs"
+    "thumbs": "npm run build && node tools/gen-thumbnails.mjs",
+    "start": "node server.js"
   },
   "dependencies": {
     "@directus/sdk": "^23.0.0",

@@ -31,6 +31,8 @@ const PRESETS = {
   qr: { width: 420 },
   /** Ảnh preview mẫu ở trang thư viện — ô 3:4 */
   card: { width: 600, height: 800, fit: 'cover' },
+  /** Ảnh khi share lên Zalo/Facebook. 1200x630 là cỡ hai nền tảng này hiển thị đẹp nhất. */
+  og: { width: 1200, height: 630, fit: 'cover' },
 } as const
 
 export type ImagePreset = keyof typeof PRESETS
