@@ -619,3 +619,78 @@
     transform: none;
   }
 }
+
+/* ---------- TƯỜNG LỜI CHÚC ----------
+   Nằm ngay dưới form RSVP trong cùng một section, nên KHÔNG phải thêm
+   SectionKey mới và không phải sửa `order` của cả 6 theme. */
+.hp-wishes {
+  margin-top: 44px;
+  padding-top: 34px;
+  border-top: 1px solid var(--hp-line);
+}
+
+.hp-wishes-head {
+  margin: 0 0 20px;
+  font-family: var(--hp-heading);
+  font-size: 1.15rem;
+  color: var(--hp-deep);
+}
+
+.hp-wishes-count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 26px;
+  height: 26px;
+  margin-left: 8px;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: var(--hp-primary);
+  color: #fff;
+  font-family: var(--hp-body);
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  vertical-align: middle;
+}
+
+.hp-wish-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 14px;
+  text-align: left;
+}
+
+.hp-wish {
+  padding: 18px 20px;
+  background: #fff;
+  border: 1px solid var(--hp-line);
+  border-radius: 14px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.hp-wish:hover {
+  transform: translateY(-3px);
+  border-color: var(--hp-primary-soft);
+  box-shadow: 0 12px 28px color-mix(in srgb, var(--hp-primary) 18%, transparent);
+}
+
+.hp-wish-msg {
+  margin: 0 0 10px;
+  line-height: 1.7;
+  color: var(--hp-text);
+}
+
+.hp-wish-name {
+  margin: 0;
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--hp-primary);
+}
+
+@media (hover: none) {
+  .hp-wish:hover {
+    transform: none;
+    box-shadow: none;
+    border-color: var(--hp-line);
+  }
+}

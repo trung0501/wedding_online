@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import type { CSSProperties, ReactNode } from 'react'
 import './template-base.css'
 import { assetUrl } from '../lib/directus'
@@ -20,6 +21,14 @@ const eventLabel: Record<string, string> = {
 
 export default function BaseTemplate({ data, theme }: { data: RenderData; theme: Theme }) {
   const { invitation: inv, events, photos, gift_accounts } = data
+
+  // Lời chúc: lấy từ server, cộng thêm lời vừa gửi trong phiên này để khách
+  // thấy ngay chữ của mình xuất hiện trên tường, khỏi phải tải lại trang.
+  const [justSent, setJustSent] = useState<{ name: string; message: string }[]>([])
+  const wishes = [
+    ...justSent.map((w, i) => ({ id: `new-${i}`, name: w.name, message: w.message })),
+    ...(data.guestbook ?? []).map((g) => ({ id: g.id, name: g.name, message: g.message })),
+  ].filter((w) => w.message?.trim())
   const demo = !data.variant
   const mainDate =
     events.find((e) => e.event_type === 'tiec_cuoi')?.event_at ??
@@ -170,7 +179,23 @@ export default function BaseTemplate({ data, theme }: { data: RenderData; theme:
       <section className="hp-section hp-rsvp" key="rsvp">
         {title('Xác nhận tham dự')}
         <p className="hp-rsvp-intro">Sự hiện diện của bạn là niềm vinh hạnh của chúng tôi.</p>
-        <RsvpForm invitationId={inv.id} demo={demo} />
+        <RsvpForm invitationId={inv.id} demo={demo} onSent={(w) => setJustSent((prev) => [w, ...prev])} />
+
+        {wishes.length > 0 && (
+          <div className="hp-wishes">
+            <p className="hp-wishes-head">
+              Lời chúc từ mọi người <span className="hp-wishes-count">{wishes.length}</span>
+            </p>
+            <div className="hp-wish-grid">
+              {wishes.map((w) => (
+                <div className="hp-wish" key={w.id}>
+                  <p className="hp-wish-msg">{w.message}</p>
+                  <p className="hp-wish-name">— {w.name || 'Ẩn danh'}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </section>
     ),
     gift:

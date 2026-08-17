@@ -3,7 +3,15 @@ import type { FormEvent } from 'react'
 import { createItem } from '@directus/sdk'
 import { directus } from '../lib/directus'
 
-export default function RsvpForm({ invitationId, demo = false }: { invitationId: string; demo?: boolean }) {
+export default function RsvpForm({
+  invitationId,
+  demo = false,
+  onSent,
+}: {
+  invitationId: string
+  demo?: boolean
+  onSent?: (entry: { name: string; message: string }) => void
+}) {
   const [name, setName] = useState('')
   const [attending, setAttending] = useState<'yes' | 'no'>('yes')
   const [num, setNum] = useState(1)
@@ -27,7 +35,17 @@ export default function RsvpForm({ invitationId, demo = false }: { invitationId:
             message,
           }),
         )
+        // Lời chúc ghi thêm vào guestbook để hiện lên tường lưu bút.
+        // rsvps không mở quyền đọc cho khách mời, guestbook thì có (chỉ bản đã duyệt).
+        if (message.trim()) {
+          await directus
+            .request(createItem('guestbook', { invitation: invitationId, name, message: message.trim() }))
+            .catch(() => {
+              /* gửi lời chúc lỗi thì thôi, RSVP đã ghi xong — không làm khách hoảng */
+            })
+        }
       }
+      if (message.trim()) onSent?.({ name, message: message.trim() })
       setStatus('done')
     } catch {
       setStatus('error')

@@ -2,9 +2,21 @@
 
 > Nền tảng thiệp cưới điện tử · Stack: **Directus 11 + React/Vite + Postgres 16 + Docker**
 > Mô hình giai đoạn đầu: **B — Concierge (làm dịch vụ)** · Định hướng sau: Hybrid → A (self-service)
-> Trạng thái: **v3** · Cập nhật: 2026-08-17
+> Trạng thái: **v4** · Cập nhật: 2026-08-17
 
 ---
+
+## Thay đổi v3 → v4
+
+Bổ sung một năng lực hoàn toàn mới và vá vài chỗ tài liệu chưa theo kịp code:
+
+- **Mục 6b (mới)** — role **"Chủ thiệp"**: tài khoản cho cặp đôi khách hàng tự theo dõi khách mời. Giải quyết luôn việc còn nợ #1 của v3.
+- **Mục 5.5** — `invitations` thêm field `client_user`.
+- **Mục 5.3** — `briefs` thêm `contact_email` và `source`.
+- **Mục 8.6 (mới)** — kích thước ảnh: 5 preset resize. Trước đó renderer gửi ảnh gốc, một album 100 ảnh nặng 300MB.
+- **Mục 6** — `guestbook.create` dùng `presets` để Directus tự gán `status = approved`.
+- **Mục 7** — biến môi trường cho ảnh, và cách chạy script quản trị trỏ lên VPS.
+- **Mục 3.2** — tường lời chúc công khai trên thiệp (đã làm, v3 còn ghi là chưa).
 
 ## Thay đổi v2 → v3
 
@@ -75,7 +87,7 @@ Nguyên tắc kiến trúc:
 1. Mở link: `/{slug}` hoặc `/{slug}?g={guest_token}`.
 2. Renderer đọc `invitation_variants` theo slug → lấy `invitation` (chỉ bản `published`) → đọc `events`, `photos`, `gift_accounts`, `templates` → hiển thị thiệp. Có `guest_token` → chèn tên khách vào lời mời *(chưa làm — P7)*.
 3. Khách **RSVP** → ghi vào `rsvps`.
-4. Khách **ký lưu bút** → ghi vào `guestbook` *(chưa có UI — P6)*.
+4. Khách **ký lưu bút**: lời chúc trong form RSVP được ghi vào cả `guestbook`, hiện thành **tường lưu bút** ngay dưới form — khách mời đọc được lời chúc của nhau.
 5. (Tùy chọn) Ghi nhận lượt xem vào `invitation_views` *(chưa làm)*.
 
 ### 3.3 Quy tắc nghiệp vụ
@@ -158,6 +170,8 @@ Tài khoản chủ thiệp tự đăng nhập · wizard tự tạo · thanh toá
 | --- | --- | --- |
 | id | uuid (PK) | |
 | contact_name / contact_phone / contact_channel | string | thông tin liên hệ |
+| **contact_email** | string | **(v4)** email, không bắt buộc — popup "Nhận tư vấn" có hỏi |
+| **source** | string(intake/consult) | **(v4)** `intake` = form đặt thiệp đầy đủ · `consult` = popup nhận tư vấn. Hai loại khách cần cách chăm sóc khác nhau |
 | template | M2O → templates | mẫu khách chọn |
 | groom_name / bride_name | string | |
 | event_info | text | ngày giờ, địa điểm (khách mô tả tự do) |
@@ -190,6 +204,7 @@ Tài khoản chủ thiệp tự đăng nhập · wizard tự tạo · thanh toá
 | settings | json | ✅ nhạc, hiệu ứng, đếm ngược |
 | published_at | timestamp | ✅ |
 | date_created / date_updated | timestamp | ❌ |
+| **client_user** | M2O → directus_users | ❌ **(v4)** tài khoản cặp đôi được xem trang theo dõi khách mời. Là sợi dây duy nhất mà toàn bộ phân quyền "Chủ thiệp" dựa vào |
 
 ### 5.6 `invitation_variants` — 3 biến thể link
 
@@ -328,7 +343,7 @@ invitations ─* orders *─ briefs
 | `briefs` | create | `contact_name, contact_phone, contact_channel, template, groom_name, bride_name, event_info, wish` | — |
 | `brief_photos` | create | `brief, image, sort` | — |
 | `rsvps` | create | `invitation, guest, name, attending, num_guests, side, message` | — |
-| `guestbook` | create | `invitation, guest, name, message` | — |
+| `guestbook` | create | `invitation, guest, name, message` | — · **preset `status = approved`** |
 | `guestbook` | read | `id, invitation, name, message, date_created` | `status = approved` |
 | `templates` | read | `*` | `is_active = true` |
 | `template_categories` | read | `*` | — |
@@ -360,6 +375,8 @@ Cố tình loại: `owner` (lộ id nhân viên), `date_created`, `date_updated`
 
 **Folder `Public` là folder upload mặc định** (`directus_settings.storage_default_folder`). Nhờ vậy nhân viên upload bình thường là ảnh tự vào đúng chỗ. Chiều thất bại được đảo ngược: quên thao tác thì ảnh vẫn hiện, chỉ dữ liệu nhạy cảm mới cần chủ động đặt ra ngoài folder này.
 
+**Dùng `presets` thay vì trông chờ giá trị mặc định.** `guestbook.create` không cho khách ghi field `status` (dễ tự duyệt bài spam), nhưng nếu default của bảng là `pending` thì tường lời chúc sẽ trống trơn mãi mãi. `presets: { status: 'approved' }` bắt Directus tự gán — chắc chắn, không phụ thuộc schema.
+
 **Giới hạn field khi ghi, không chỉ khi đọc.** Nếu `briefs.create` để `fields: *`, bất kỳ ai cũng `POST /items/briefs` với `status: "paid"`. Whitelist field ghi mới chặn được.
 
 ### 6.5 Cách kiểm tra
@@ -369,6 +386,78 @@ node --env-file=.env directus/audit-permissions.mjs   # chỉ đọc, in báo c�
 curl.exe -i "http://localhost:8055/items/briefs"      # phải 403
 curl.exe -i "http://localhost:8055/items/invitations" # chỉ được thấy bản published
 ```
+
+---
+
+## 6b. Tài khoản "Chủ thiệp" *(mới ở v4)*
+
+Cặp đôi khách hàng có một tài khoản để **tự xem** ai đã xác nhận tham dự và đọc lời chúc, thay vì phải nhắn hỏi nhân viên.
+
+> Script: `add-client-user-field.mjs` → `setup-client-role.mjs` → `create-client-account.mjs`
+> Trang: `/quan-ly`
+
+### 6b.1 Vì sao dùng tài khoản, không dùng link bí mật
+
+Phương án đầu tiên là link kèm mã bí mật `?key=…`. Đã loại vì **mã phải được kiểm ở server mới có nghĩa** — kiểm ở trình duyệt thì ai gọi thẳng API cũng lấy được dữ liệu. Muốn kiểm ở server phải dựng Directus Flow, tức là một cỗ máy mới.
+
+Trong khi đó Directus có sẵn bộ lọc `$CURRENT_USER` — **đúng công cụ đã dùng và đã kiểm chứng** ở mục 6. Chọn đăng nhập vừa ít việc hơn, vừa là nền móng sẵn cho mô hình A ở P8.
+
+**Tài khoản do HVN tạo, không cho khách tự đăng ký.** Tự đăng ký không giải quyết được việc nối tài khoản với thiệp — vẫn phải có mã nhận thiệp, tức là thêm việc chứ không bớt. Mở quyền tạo `directus_users` cho Public cũng là mở cửa cho bot.
+
+### 6b.2 Bảng quyền — 7 dòng
+
+Ba bộ lọc dùng lại nhiều lần:
+
+```js
+MINE                 = { client_user: { _eq: '$CURRENT_USER' } }
+MINE_VIA_INVITATION  = { invitation: { client_user: { _eq: '$CURRENT_USER' } } }
+ME                   = { id: { _eq: '$CURRENT_USER' } }
+```
+
+| Collection | Action | Field | Điều kiện lọc |
+| --- | --- | --- | --- |
+| `invitations` | read | 10 field nội dung | `MINE` |
+| `invitation_variants` | read | `id, variant_type, slug` | `MINE_VIA_INVITATION` |
+| `events` | read | `*` | `MINE_VIA_INVITATION` |
+| `rsvps` | read | `id, name, attending, num_guests, side, message, date_created` | `MINE_VIA_INVITATION` |
+| `guestbook` | read | `id, name, message, status, date_created` | `MINE_VIA_INVITATION` |
+| `directus_users` | read | `id, first_name, last_name, email` | `ME` |
+| `directus_users` | update | **chỉ** `password, first_name, last_name` | `ME` |
+
+Policy đặt `admin_access: false` và **`app_access: false`** — khách đăng nhập được qua API nhưng **không vào được giao diện admin Directus**.
+
+### 6b.3 Ba lời hứa với khách và cấu hình tương ứng
+
+Đây là những câu nhân viên nói với khách khi bàn giao. Mỗi câu ràng buộc một phần cấu hình — sửa cấu hình mà quên đối chiếu là **nói sai với khách hàng**.
+
+| Nói với khách | Ràng buộc kỹ thuật |
+| --- | --- |
+| "Chỉ xem được thiệp của anh chị" | Mọi dòng `read` đều phải có bộ lọc, không dòng nào để trống |
+| "Không sửa hay xoá được gì" | 5 bảng dữ liệu **chỉ có `read`** — không `create`/`update`/`delete` |
+| "Đổi được mật khẩu" | `directus_users.update` phải tồn tại, nhưng **tuyệt đối không được có `role`, `policies`, `email`, `status`** trong danh sách field — có là khách tự nâng mình lên admin |
+
+Nếu khách hỏi *"bên bạn có xem được không?"* — trả lời **có**, vì HVN là bên dựng thiệp. Nói khác đi là nói dối, và khách tinh ý sẽ nhận ra.
+
+### 6b.4 Cách kiểm chứng
+
+```powershell
+$body = '{"email":"<email khách>","password":"<mật khẩu>"}'
+$r = Invoke-RestMethod -Uri "http://localhost:8055/auth/login" -Method Post -ContentType "application/json" -Body $body
+$tk = $r.data.access_token
+
+curl.exe -s "http://localhost:8055/items/rsvps" -H "Authorization: Bearer $tk"        # chỉ thiệp của mình
+curl.exe -s -i "http://localhost:8055/items/briefs" -H "Authorization: Bearer $tk"    # phải 403
+```
+
+Tạo hai tài khoản cho hai thiệp khác nhau rồi đối chiếu chéo là cách chắc nhất.
+
+### 6b.5 Trang `/quan-ly` có gì
+
+Bốn ô thống kê (lượt xác nhận · tổng số người · báo không đến · lời chúc) · link thiệp kèm nút chép · bảng khách xác nhận tách theo nhà trai/nhà gái · bảng khách báo không đến · tường lời chúc · **nút tải danh sách ra Excel** · đổi mật khẩu · đăng xuất.
+
+Frontend **không truyền id thiệp** khi gọi API — gọi trần và để server tự lọc. Nhờ vậy lỗi ở frontend cũng không làm lộ dữ liệu người khác.
+
+> `num_guests = 0` vẫn được tính là **1 người**: khách quên điền thì vẫn phải có chỗ ngồi. Con số trên trang và trong file Excel dùng chung quy tắc này.
 
 ---
 
@@ -391,6 +480,36 @@ Nginx/Caddy/Coolify
 | `DB_PASSWORD`, `ADMIN_PASSWORD` | `.env` gốc | Đổi khác local |
 
 > `CORS_ORIGIN` cũng ảnh hưởng script chụp thumbnail — script chạy `vite preview` đúng cổng khai báo trong biến này.
+
+Biến cho ảnh (có mặc định trong `docker-compose.yml`, chỉ khai khi muốn đổi):
+
+| Biến | Mặc định | Để làm gì |
+| --- | --- | --- |
+| `ASSETS_TRANSFORM_MAX_CONCURRENT` | 4 | Số lượt resize song song. VPS 1 core nên hạ về 2 |
+| `ASSETS_TRANSFORM_MAX_OPERATIONS` | 5 | Số phép biến đổi trên một ảnh |
+| `ASSETS_TRANSFORM_IMAGE_MAX_DIMENSION` | 6000 | Chặn ảnh quá khổ |
+| `ASSETS_CACHE_TTL` | 30d | Cache ở trình duyệt và CDN |
+
+> Không có các giới hạn này, người lạ gọi `?width=1`, `?width=2`… hàng nghìn lần sẽ ép server resize liên tục và **làm đầy ổ đĩa bằng file cache rác**.
+
+### 7.4 Chạy script quản trị trỏ lên VPS
+
+Script nói chuyện với Directus **qua HTTP**, nên **không cần cài Node trên VPS**. Tạo `.env.production` **trên máy làm việc** (không phải trên server):
+
+```
+DIRECTUS_URL=https://api.tenmien.vn
+ADMIN_EMAIL=admin@tenmien.vn
+ADMIN_PASSWORD=…
+SITE_URL=https://tenmien.vn
+```
+
+```powershell
+node --env-file=.env.production directus/audit-permissions.mjs
+```
+
+Cùng một script, hai môi trường — code không đổi một dòng. `.gitignore` chặn cả `.env.*` nên file này không lọt lên Git.
+
+> Trên VPS dùng Coolify thì biến môi trường khai **trong giao diện Coolify**, không có file `.env` nào trên server. `.env.production` chỉ là "điều khiển từ xa" nằm ở máy anh.
 
 ### 7.2 Volume bắt buộc persistent
 
@@ -453,6 +572,29 @@ Sinh tự động bằng `web/tools/gen-thumbnails.mjs` — chụp Chromium ở 
 
 Thứ tự ưu tiên ảnh ở trang thư viện: `templates.thumbnail` (Directus) → ảnh tĩnh → ô chữ placeholder.
 
+### 8.6 Kích thước ảnh *(mới ở v4)*
+
+Directus resize ảnh theo tham số trên URL rồi cache lại. **Không truyền tham số thì nó trả ảnh gốc** — ảnh 4000×3000 nặng 3MB từ điện thoại khách được gửi nguyên xi rồi trình duyệt mới thu nhỏ về ô 200px.
+
+| | Không preset | Có preset |
+| --- | --- | --- |
+| 1 ảnh album | ~3MB | ~50KB |
+| Album 100 ảnh | **~300MB** | ~5MB |
+
+Năm preset trong `web/src/lib/directus.ts`:
+
+| Preset | Dùng ở đâu | Kích thước |
+| --- | --- | --- |
+| `album` | Khoảnh khắc | 600×750 cắt 3:4 |
+| `cover` | Ảnh bìa tràn viền | rộng 1600 |
+| `coverSplit` | Ảnh bìa mẫu chia đôi | rộng 1000 |
+| `qr` | QR mừng cưới | rộng 420 |
+| `card` | Ảnh mẫu ở thư viện | 600×800 cắt 3:4 |
+
+Ba tham số dùng chung: `format=auto` (WebP nếu trình duyệt hỗ trợ, không thì JPEG), `quality=80`, `withoutEnlargement=true` (ảnh gốc nhỏ hơn preset thì giữ nguyên).
+
+> Preset chỉ giảm **băng thông**, không giảm **dung lượng đĩa** — Directus vẫn giữ ảnh gốc. Muốn tiết kiệm đĩa thì phải nén trước khi upload. Ước lượng: 100 ảnh/thiệp ≈ 300MB, VPS 40–80GB chứa được khoảng 80–150 thiệp.
+
 ### 8.5 Route
 
 | URL | Trang | Cần Directus? |
@@ -460,6 +602,8 @@ Thứ tự ưu tiên ảnh ở trang thư viện: `templates.thumbnail` (Directu
 | `/` | Thư viện mẫu | ✅ |
 | `/mau/:slug` | Xem trước mẫu | ✅ |
 | `/dat-thiep` | Form intake | ✅ |
+| `/kho-mau-thiep`, `/goi-dich-vu`, `/lien-he` | Trang bán hàng | một phần |
+| `/quan-ly` | **(v4)** Trang theo dõi khách mời của cặp đôi — cần đăng nhập | ✅ |
 | `/:slug` | Thiệp thật (chỉ `published`) | ✅ |
 | `/demo`, `/_thumb/:key` | Render bằng dữ liệu mẫu trong code | ❌ |
 
@@ -477,6 +621,10 @@ Chạy từ thư mục gốc, Directus phải đang bật. **Tất cả đều i
 | `add-o2m-aliases.mjs` | Gom quan hệ con vào trang cha trong admin | ✅ |
 | `setup-permissions.mjs` | Siết quyền Public. Tự sao lưu trước khi ghi; có `--dry-run` và `--restore` | ✅ |
 | `audit-permissions.mjs` | Soi quyền Public, chấm điểm theo mục 6 | ❌ |
+| `add-brief-fields.mjs` | Thêm `contact_email` + `source` cho `briefs` | ✅ |
+| `add-client-user-field.mjs` | Thêm `client_user` cho `invitations` | ✅ |
+| `setup-client-role.mjs` | Dựng role + policy "Chủ thiệp" (mục 6b). Có `--dry-run` | ✅ |
+| `create-client-account.mjs` | Tạo tài khoản cho cặp đôi, in sẵn tin nhắn Zalo. Có `--reset`, `--dry-run` | ✅ |
 | `web/tools/gen-thumbnails.mjs` | Chụp ảnh preview 6 mẫu (`npm run thumbs`) | ❌ chỉ ghi ảnh |
 
 ### Thứ tự dựng hệ thống từ đầu (dùng cho VPS)
@@ -535,12 +683,14 @@ node --env-file=.env directus/seed-templates.mjs --update # file → Directus
 
 | # | Việc | Ảnh hưởng |
 | --- | --- | --- |
-| 1 | **Link cho khách duyệt khi `status = review`** — mục 3.1 bước 5 mô tả có, nhưng renderer chỉ đọc `published`. Cần cơ chế token xem trước riêng | Nghiệp vụ: hiện phải publish sớm mới cho khách xem được |
+| 1 | **Link cho khách duyệt khi `status = review`** — renderer vẫn chỉ đọc `published`. Nhưng từ v4 đã có tài khoản "Chủ thiệp", nên hướng gọn nhất là cho policy đó đọc thêm bản `review` của chính mình | Nghiệp vụ: hiện phải publish sớm mới cho khách xem được |
 | 2 | `orders` chưa có quy trình vận hành | Chưa theo dõi được thu tiền |
-| 3 | Lưu bút chưa có UI trên thiệp | Quyền đã cấp sẵn, chỉ thiếu component |
+| 3 | ~~Lưu bút chưa có UI~~ → **đã làm ở v4** (tường lời chúc dưới form RSVP) | — |
 | 4 | 3 link variant + `display_config` chưa được renderer dùng | P7 |
 | 5 | Cá nhân hoá `?g={token}` chưa làm | P7 |
 | 6 | SEO/OG cho từng link — share Zalo/Facebook chưa có ảnh và mô tả riêng | P7, ảnh hưởng trực tiếp tới cảm nhận của khách |
 | 7 | `invitation_views` chưa ghi nhận | Analytics |
 | 8 | Directus Flows thông báo brief/RSVP mới | Vận hành thủ công |
 | 9 | Tài liệu deploy Coolify | Viết khi chốt tên miền |
+| 10 | Moderation lưu bút: hiện mọi lời chúc tự `approved`. Gặp spam thì phải đổi preset sang `pending` và làm chỗ duyệt trong admin | Chưa cấp bách, nhưng nên biết trước |
+| 11 | Quên mật khẩu cho tài khoản "Chủ thiệp" phải nhờ nhân viên đặt lại (`--reset`). Tự phục vụ cần cấu hình SMTP | Chấp nhận được ở quy mô vài chục khách |

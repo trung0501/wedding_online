@@ -10,6 +10,7 @@ import {
   type ClientUser,
   type ManageData,
 } from '../lib/auth'
+import { exportGuestList } from '../lib/exportCsv'
 import { site } from '../siteConfig'
 import './manage.css'
 
@@ -257,9 +258,19 @@ function Dashboard({ data }: { data: ManageData }) {
 
   return (
     <div className="mn-body">
-      <h1 className="mn-names">
-        {inv.groom_name?.trim()} &amp; {inv.bride_name?.trim()}
-      </h1>
+      <div className="mn-head">
+        <h1 className="mn-names">
+          {inv.groom_name?.trim()} &amp; {inv.bride_name?.trim()}
+        </h1>
+        {rsvps.length > 0 && (
+          <button
+            className="mn-ghost"
+            onClick={() => exportGuestList(rsvps, guestbook, `${inv.groom_name ?? ''} ${inv.bride_name ?? ''}`)}
+          >
+            ⬇ Tải danh sách (Excel)
+          </button>
+        )}
+      </div>
 
       <div className="mn-stats">
         <Stat label="Lượt xác nhận" value={s.confirmed} accent />

@@ -50,3 +50,13 @@ services:
       CORS_ENABLED: "true"
       CORS_ORIGIN: ${CORS_ORIGIN}
       WEBSOCKETS_ENABLED: "true"
+
+      # Ảnh: Directus resize theo tham số trên URL rồi cache lại.
+      # Hai giới hạn dưới đây chống việc người lạ gọi ?width=1,2,3… hàng nghìn
+      # lần để ép server resize liên tục và làm đầy ổ đĩa bằng file cache rác.
+      ASSETS_TRANSFORM_MAX_CONCURRENT: ${ASSETS_TRANSFORM_MAX_CONCURRENT:-4}
+      ASSETS_TRANSFORM_MAX_OPERATIONS: ${ASSETS_TRANSFORM_MAX_OPERATIONS:-5}
+      # Chặn ảnh quá khổ (đơn vị: pixel). Ảnh cưới hiếm khi vượt 6000px.
+      ASSETS_TRANSFORM_IMAGE_MAX_DIMENSION: ${ASSETS_TRANSFORM_IMAGE_MAX_DIMENSION:-6000}
+      # Cache bản đã resize ở trình duyệt và CDN — giảm tải hẳn cho VPS.
+      ASSETS_CACHE_TTL: ${ASSETS_CACHE_TTL:-30d}

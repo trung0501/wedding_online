@@ -80,7 +80,16 @@ function desiredPermissions(publicFolderId) {
 
     // ----- Khách mời tương tác -----
     { collection: 'rsvps', action: 'create', fields: ['invitation', 'guest', 'name', 'attending', 'num_guests', 'side', 'message'], permissions: {} },
-    { collection: 'guestbook', action: 'create', fields: ['invitation', 'guest', 'name', 'message'], permissions: {} },
+    // presets: Directus tự gán status='approved' khi khách gửi. Không cho khách
+    // ghi field `status` (dễ tự duyệt bài spam), mà cũng không phụ thuộc giá trị
+    // mặc định của bảng — nếu default là 'pending' thì tường lời chúc sẽ trống trơn.
+    {
+      collection: 'guestbook',
+      action: 'create',
+      fields: ['invitation', 'guest', 'name', 'message'],
+      permissions: {},
+      presets: { status: 'approved' },
+    },
     { collection: 'guestbook', action: 'read', fields: ['id', 'invitation', 'name', 'message', 'date_created'], permissions: { status: { _eq: 'approved' } } },
 
     // ----- Thư viện mẫu -----
@@ -107,6 +116,7 @@ function desiredPermissions(publicFolderId) {
 }
 
 const sameFilter = (a, b) => JSON.stringify(a ?? {}) === JSON.stringify(b ?? {})
+const samePresets = (a, b) => JSON.stringify(a ?? null) === JSON.stringify(b ?? null)
 const sameFields = (a, b) => JSON.stringify([...(a ?? [])].sort()) === JSON.stringify([...(b ?? [])].sort())
 
 // ---------- Tìm policy Public ----------
@@ -233,13 +243,17 @@ async function applyPermissions(token, policyId, desired) {
   for (const d of desired) {
     const k = key(d.collection, d.action)
     const existing = byKey.get(k)
-    const body = { policy: policyId, collection: d.collection, action: d.action, fields: d.fields, permissions: d.permissions, validation: {}, presets: null }
+    const body = { policy: policyId, collection: d.collection, action: d.action, fields: d.fields, permissions: d.permissions, validation: {}, presets: d.presets ?? null }
 
     if (!existing) {
       console.log(`  + THÊM   ${k}`)
       if (!DRY) await api('/permissions', { method: 'POST', token, body })
       added++
-    } else if (!sameFields(existing.fields, d.fields) || !sameFilter(existing.permissions, d.permissions)) {
+    } else if (
+      !sameFields(existing.fields, d.fields) ||
+      !sameFilter(existing.permissions, d.permissions) ||
+      !samePresets(existing.presets, d.presets ?? null)
+    ) {
       console.log(`  ~ SỬA    ${k}`)
       if (!sameFilter(existing.permissions, d.permissions)) {
         console.log(`            filter: ${JSON.stringify(existing.permissions ?? {})} → ${JSON.stringify(d.permissions)}`)

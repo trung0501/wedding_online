@@ -174,6 +174,8 @@ export interface RenderData {
   events: EventItem[]
   photos: Photo[]
   gift_accounts: GiftAccount[]
+  /** Lời chúc đã duyệt, hiển thị thành tường lưu bút dưới form RSVP. */
+  guestbook?: GuestbookEntry[]
   variant?: InvitationVariant | null
 }
 

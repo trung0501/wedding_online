@@ -40,10 +40,15 @@ export async function fetchInvitationBySlug(slug: string): Promise<RenderData | 
   const invitation = invs[0] as Invitation | undefined
   if (!invitation) return null
 
-  const [events, photos, gift_accounts, templates] = await Promise.all([
+  const [events, photos, gift_accounts, guestbook, templates] = await Promise.all([
     directus.request(readItems('events', { filter: { invitation: { _eq: invId } }, sort: ['sort'], fields: ['*'] })),
     directus.request(readItems('photos', { filter: { invitation: { _eq: invId } }, sort: ['sort'], fields: ['*'] })),
     directus.request(readItems('gift_accounts', { filter: { invitation: { _eq: invId } }, fields: ['*'] })),
+    // Quyền Public đã lọc sẵn status = approved, ở đây không cần lọc lại.
+    // .catch: thiếu quyền hay lỗi mạng thì thiệp vẫn hiện, chỉ mất tường lời chúc.
+    directus
+      .request(readItems('guestbook', { filter: { invitation: { _eq: invId } }, sort: ['-date_created'], fields: ['*'] }))
+      .catch(() => []),
     invitation.template
       ? directus.request(readItems('templates', { filter: { id: { _eq: invitation.template } }, limit: 1, fields: ['*'] }))
       : Promise.resolve([] as Template[]),
@@ -55,6 +60,7 @@ export async function fetchInvitationBySlug(slug: string): Promise<RenderData | 
     events,
     photos,
     gift_accounts,
+    guestbook,
     variant,
   }
 }
