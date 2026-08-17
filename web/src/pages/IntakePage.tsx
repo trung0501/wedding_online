@@ -49,8 +49,8 @@ export default function IntakePage() {
             Chúng tôi đã nhận được yêu cầu của Quý khách và sẽ liên hệ sớm nhất để hoàn thiện thiệp cưới. Quý khách có thể gửi
             thêm ảnh cưới qua Zalo/Facebook khi chúng tôi liên hệ.
           </p>
-          <Link className="tp-cta" to="/">
-            ← Về thư viện mẫu
+          <Link className="tp-cta" to="/kho-mau-thiep">
+            ← Về kho mẫu thiệp
           </Link>
         </div>
       </div>
@@ -60,7 +60,7 @@ export default function IntakePage() {
   return (
     <div className="ik">
       <div className="ik-head">
-        <Link className="tp-back" to={mau ? `/mau/${mau}` : '/'}>
+        <Link className="tp-back" to={mau ? `/mau/${mau}` : '/kho-mau-thiep'}>
           ← Quay lại
         </Link>
         <h1 className="ik-title">Đặt thiệp cưới</h1>

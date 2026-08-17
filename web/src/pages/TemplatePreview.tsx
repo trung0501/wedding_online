@@ -54,8 +54,8 @@ export default function TemplatePreview() {
   return (
     <div className="tp">
       <div className="tp-bar">
-        <Link className="tp-back" to="/">
-          ← Thư viện mẫu
+        <Link className="tp-back" to="/kho-mau-thiep">
+          ← Kho mẫu thiệp
         </Link>
         <span className="tp-name">{template.name}</span>
         <Link className="tp-cta" to={`/dat-thiep?mau=${template.slug}`}>

@@ -348,3 +348,41 @@
     gap: 16px;
   }
 }
+
+/* ---------- KHUNG XÁM KHI ĐANG TẢI ---------- */
+
+.gl-card-skeleton {
+  pointer-events: none;
+  cursor: default;
+}
+
+.gl-sk {
+  background: linear-gradient(90deg, #f3e7ec 25%, #faf1f4 50%, #f3e7ec 75%);
+  background-size: 200% 100%;
+  animation: gl-shimmer 1.4s ease-in-out infinite;
+  border-radius: 8px;
+}
+
+.gl-sk-line {
+  height: 12px;
+  margin-bottom: 10px;
+}
+
+.gl-sk-line-lg {
+  height: 18px;
+  width: 62%;
+}
+
+.gl-sk-line-sm {
+  width: 40%;
+  margin-bottom: 0;
+}
+
+@keyframes gl-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gl-sk { animation: none; }
+}
