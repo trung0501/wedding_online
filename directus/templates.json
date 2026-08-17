@@ -1,68 +1,68 @@
 [
   {
     "name": "Hồng Pastel",
-    "slug": "hong-pastel-01",
+    "slug": "hong-pastel",
     "component_key": "hong-pastel-01",
-    "description": "Tông hồng pastel lãng mạn, nữ tính, ngọt ngào.",
+    "description": "Tông hồng pastel lãng mạn, nữ tính.",
     "badge": "new",
     "is_active": true,
     "sort": 1,
     "price": 0,
-    "demo_slug": null
+    "demo_slug": "hong-phuc-hong-hanh"
   },
   {
     "name": "Đỏ Truyền Thống",
-    "slug": "do-truyen-thong-01",
+    "slug": "do-truyen-thong",
     "component_key": "do-truyen-thong-01",
     "description": "Sắc đỏ son Á Đông, chữ Hỷ, trang trọng cổ điển.",
     "badge": "hot",
     "is_active": true,
     "sort": 2,
     "price": 0,
-    "demo_slug": null
+    "demo_slug": "hong-phuc-hong-hanh"
   },
   {
     "name": "Xanh Thiên Nhiên",
-    "slug": "xanh-thien-nhien-01",
+    "slug": "xanh-thien-nhien",
     "component_key": "xanh-thien-nhien-01",
     "description": "Xanh lá tươi mát, phong cách vườn cưới ngoài trời.",
     "badge": "none",
     "is_active": true,
     "sort": 3,
     "price": 0,
-    "demo_slug": null
+    "demo_slug": "hong-phuc-hong-hanh"
   },
   {
     "name": "Kem Gold",
-    "slug": "kem-gold-01",
+    "slug": "kem-gold",
     "component_key": "kem-gold-01",
     "description": "Nền kem điểm vàng champagne, sang trọng hiện đại.",
     "badge": "new",
     "is_active": true,
     "sort": 4,
     "price": 0,
-    "demo_slug": null
+    "demo_slug": "hong-phuc-hong-hanh"
   },
   {
     "name": "Tím Lavender",
-    "slug": "tim-lavender-01",
+    "slug": "tim-lavender",
     "component_key": "tim-lavender-01",
     "description": "Tím oải hương dịu dàng, ảnh bìa nửa trang, dòng thời gian sự kiện.",
     "badge": "new",
     "is_active": true,
     "sort": 5,
     "price": 0,
-    "demo_slug": null
+    "demo_slug": "hong-phuc-hong-hanh"
   },
   {
     "name": "Burgundy Vintage",
-    "slug": "burgundy-vintage-01",
+    "slug": "burgundy-vintage",
     "component_key": "burgundy-vintage-01",
     "description": "Đỏ rượu vang trầm ấm, khung viền tối giản, hoài cổ tinh tế.",
     "badge": "none",
     "is_active": true,
     "sort": 6,
     "price": 0,
-    "demo_slug": null
+    "demo_slug": "hong-phuc-hong-hanh"
   }
 ]

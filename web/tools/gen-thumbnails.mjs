@@ -1,36 +1,85 @@
 // ============================================================
 //  Chụp ảnh thumbnail cho từng mẫu thiệp bằng Chromium (Playwright).
-//  Ảnh chụp là GIAO DIỆN THẬT của mẫu — đúng font, đúng màu, đúng bố cục.
 //
-//  Nguồn mẫu: src/templates/registry.ts (tự đọc, không cần khai báo tay)
-//  Kết quả:   public/thumbs/<component_key>.jpg  (900x1200, tỉ lệ 3:4, JPEG q80)
+//  Chụp thẳng trang xem trước /mau/<slug> — tức là ĐÚNG thứ khách sẽ thấy
+//  khi bấm vào thẻ mẫu. Nếu mẫu có demo_slug thì ảnh sẽ mang nội dung
+//  thiệp demo thật trong Directus, không phải dữ liệu mẫu trong code.
+//
+//  Nguồn mẫu: directus/templates.json (nguồn sự thật của danh mục)
+//  Kết quả:   public/thumbs/<component_key>.jpg  (900x1200, 3:4, JPEG q80)
+//
+//  YÊU CẦU: Directus phải đang chạy (trang xem trước cần đọc dữ liệu).
 //
 //  CHẠY (từ thư mục web/):
-//    npm install                      # lần đầu, cài cả playwright
+//    npm install                      # lần đầu
 //    npx playwright install chromium  # lần đầu, tải trình duyệt (~150MB)
 //    npm run thumbs
 //
-//  Chạy lại bất cứ lúc nào sau khi sửa themes.ts để ảnh khớp thiết kế mới.
+//  Chạy lại sau khi sửa themes.ts hoặc sửa nội dung thiệp demo.
 // ============================================================
 
 import { readFileSync, mkdirSync, existsSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
 import { spawn } from 'node:child_process'
+import net from 'node:net'
 import { chromium } from 'playwright'
 
 const WEB = join(dirname(fileURLToPath(import.meta.url)), '..')
+const ROOT = join(WEB, '..')
 const OUT = join(WEB, 'public', 'thumbs')
-const PORT = 4178
+// PHẢI khớp CORS_ORIGIN trong .env gốc, nếu không Directus chặn request và
+// trang xem trước không đọc được dữ liệu. Đổi CORS_ORIGIN thì đổi cả biến này.
+const PORT = Number(process.env.THUMBS_PORT || 5173)
 const WIDTH = 900
 const HEIGHT = 1200 // 3:4 khớp .gl-thumb { aspect-ratio: 3/4 }
 
-// Đọc danh sách component_key thẳng từ registry.ts → thêm mẫu mới là script tự biết.
-function readTemplateKeys() {
-  const src = readFileSync(join(WEB, 'src', 'templates', 'registry.ts'), 'utf8')
-  const block = src.match(/templateRegistry[^=]*=\s*\{([\s\S]*?)\n\}/)
-  if (!block) throw new Error('Không đọc được templateRegistry trong registry.ts')
-  return [...block[1].matchAll(/'([a-z0-9-]+)'\s*:/g)].map((m) => m[1])
+const DIRECTUS_URL = (process.env.VITE_DIRECTUS_URL || 'http://localhost:8055').replace(/\/$/, '')
+
+function readTemplates() {
+  const p = join(ROOT, 'directus', 'templates.json')
+  const rows = JSON.parse(readFileSync(p, 'utf8'))
+  for (const t of rows) {
+    if (!t.slug || !t.component_key) throw new Error(`Mẫu thiếu slug/component_key trong templates.json`)
+  }
+  return rows
+}
+
+async function checkDirectus() {
+  try {
+    const r = await fetch(`${DIRECTUS_URL}/server/health`, { signal: AbortSignal.timeout(5000) })
+    if (!r.ok) throw new Error(String(r.status))
+  } catch {
+    throw new Error(
+      `Không kết nối được Directus tại ${DIRECTUS_URL}\n` +
+        `   Trang xem trước cần Directus để đọc mẫu và thiệp demo.\n` +
+        `   Bật lên rồi chờ ~20 giây:  docker compose up -d`,
+    )
+  }
+}
+
+// Cổng 5173 thường đang bị `npm run dev` chiếm. Báo sớm cho rõ, đừng để
+// vite preview chết lặng rồi script treo 30 giây mới timeout.
+function checkPortFree() {
+  return new Promise((resolve, reject) => {
+    const sock = net.connect({ port: PORT, host: '127.0.0.1' })
+    sock.setTimeout(1500)
+    sock.on('connect', () => {
+      sock.destroy()
+      reject(
+        new Error(
+          `Cổng ${PORT} đang bị chiếm — nhiều khả năng là "npm run dev".\n` +
+            `   Tắt nó đi rồi chạy lại (Ctrl+C ở cửa sổ đang chạy dev).\n` +
+            `   Cổng này bắt buộc vì Directus chỉ cho phép CORS từ http://localhost:${PORT}`,
+        ),
+      )
+    })
+    sock.on('timeout', () => {
+      sock.destroy()
+      resolve()
+    })
+    sock.on('error', () => resolve()) // không kết nối được = cổng trống
+  })
 }
 
 function startPreview() {
@@ -57,8 +106,11 @@ async function main() {
   if (!existsSync(join(WEB, 'dist', 'index.html'))) {
     throw new Error('Chưa có bản build. Chạy trước: npm run build')
   }
-  const keys = readTemplateKeys()
-  console.log(`▶ ${keys.length} mẫu: ${keys.join(', ')}`)
+  await checkDirectus()
+  await checkPortFree()
+
+  const templates = readTemplates()
+  console.log(`▶ ${templates.length} mẫu từ directus/templates.json`)
 
   mkdirSync(OUT, { recursive: true })
   const server = await startPreview()
@@ -67,19 +119,30 @@ async function main() {
   try {
     const page = await browser.newPage({ viewport: { width: WIDTH, height: HEIGHT } })
 
-    for (const key of keys) {
-      await page.goto(`http://localhost:${PORT}/_thumb/${key}`, { waitUntil: 'networkidle', timeout: 45000 })
+    for (const t of templates) {
+      await page.goto(`http://localhost:${PORT}/mau/${t.slug}`, { waitUntil: 'networkidle', timeout: 45000 })
+
+      // Trang xem trước có thanh điều hướng phía trên — không muốn nó lọt vào ảnh.
+      await page.addStyleTag({ content: '.tp-bar{display:none !important}' })
+
+      // Nếu slug sai hoặc Directus không trả dữ liệu, trang hiện thông báo lỗi.
+      // Chụp cái đó thì ảnh hỏng mà không ai biết → dừng luôn cho rõ ràng.
+      const body = await page.textContent('body')
+      if (body?.includes('Không tìm thấy mẫu này')) {
+        throw new Error(`Slug "${t.slug}" không có trong Directus. Chạy: node --env-file=.env directus/seed-templates.mjs`)
+      }
+
       await page.evaluate(() => document.fonts.ready) // chờ Google Fonts vẽ xong
-      await page.waitForTimeout(600) // chờ ảnh bìa + đếm ngược ổn định
+      await page.waitForTimeout(800) // chờ ảnh bìa tải xong
+
       // Không dùng fullPage → chụp đúng khung viewport = phần hero (min-height:100svh).
       // JPEG q80: ảnh chỉ hiện ở ô ~300px nên PNG là phí băng thông (800KB so với ~90KB).
-      await page.screenshot({ path: join(OUT, `${key}.jpg`), type: 'jpeg', quality: 80 })
-      console.log(`✓ ${key}.jpg`)
+      await page.screenshot({ path: join(OUT, `${t.component_key}.jpg`), type: 'jpeg', quality: 80 })
+      console.log(`✓ ${t.component_key}.jpg   ← /mau/${t.slug}`)
     }
   } finally {
     await browser.close()
     // npm sinh tiến trình con (vite) — kill mình npm là vite còn sống, script treo.
-    // Diệt cả nhóm tiến trình rồi thoát cứng cho chắc.
     try {
       process.platform === 'win32' ? spawn('taskkill', ['/pid', String(server.pid), '/f', '/t']) : process.kill(-server.pid, 'SIGKILL')
     } catch {
@@ -87,11 +150,11 @@ async function main() {
     }
   }
 
-  console.log('\n✅ Xong. Ảnh nằm ở web/public/thumbs/ — commit cùng code.')
+  console.log('\n Xong. Ảnh nằm ở web/public/thumbs/ — commit cùng code.')
   process.exit(0)
 }
 
 main().catch((err) => {
-  console.error('\n❌ Lỗi:', err.message)
+  console.error('\n Lỗi:', err.message)
   process.exit(1)
 })
