@@ -6,6 +6,8 @@ export interface Brief {
   contact_name: string | null
   contact_phone: string | null
   contact_channel: string | null
+  contact_email: string | null
+  source: 'intake' | 'consult' | null
   template: string | null
   groom_name: string | null
   bride_name: string | null

@@ -26,7 +26,8 @@ export default function BaseTemplate({ data, theme }: { data: RenderData; theme:
     events.map((e) => e.event_at).filter(Boolean).sort()[0] ??
     inv.published_at ??
     null
-  const cover = assetUrl(inv.cover_photo)
+  // Bố cục split chỉ dùng nửa bề ngang → tải bản nhỏ hơn cho đỡ tốn băng thông.
+  const cover = assetUrl(inv.cover_photo, theme.heroVariant === 'split' ? 'coverSplit' : 'cover')
 
   const styleVars: Record<string, string> = {
     '--hp-bg': theme.bg,
@@ -159,7 +160,7 @@ export default function BaseTemplate({ data, theme }: { data: RenderData; theme:
           <div className="hp-album-grid">
             {photos.map((p) => (
               <div className="hp-photo" key={p.id}>
-                <img src={assetUrl(p.image)} alt={p.caption ?? ''} loading="lazy" />
+                <img src={assetUrl(p.image, 'album')} alt={p.caption ?? ''} loading="lazy" width={600} height={750} />
               </div>
             ))}
           </div>
@@ -180,7 +181,7 @@ export default function BaseTemplate({ data, theme }: { data: RenderData; theme:
             {gift_accounts.map((g) => (
               <div className="hp-gift-card" key={g.id}>
                 <h3>{g.side === 'groom' ? 'Nhà Trai' : 'Nhà Gái'}</h3>
-                {g.qr_image && <img className="hp-qr" src={assetUrl(g.qr_image)} alt="QR chuyển khoản" loading="lazy" />}
+                {g.qr_image && <img className="hp-qr" src={assetUrl(g.qr_image, 'qr')} alt="QR chuyển khoản" loading="lazy" />}
                 {g.bank_name && <p>{g.bank_name}</p>}
                 {g.account_holder && <p className="hp-strong">{g.account_holder}</p>}
                 {g.account_number && <p className="hp-acct">{g.account_number}</p>}

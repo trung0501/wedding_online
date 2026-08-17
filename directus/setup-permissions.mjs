@@ -63,9 +63,10 @@ const INVITATION_PUBLIC_FIELDS = [
 ]
 
 // Field khách được phép GHI. Cố tình BỎ: status, invitation (chỉ nhân viên đặt).
+// `source` cho ghi được vì nó chỉ là nhãn thống kê, không phải cổng nghiệp vụ.
 const BRIEF_CREATE_FIELDS = [
-  'contact_name', 'contact_phone', 'contact_channel', 'template',
-  'groom_name', 'bride_name', 'event_info', 'wish',
+  'contact_name', 'contact_phone', 'contact_channel', 'contact_email', 'template',
+  'groom_name', 'bride_name', 'event_info', 'wish', 'source',
 ]
 
 // Thiệp cha phải ở trạng thái published.

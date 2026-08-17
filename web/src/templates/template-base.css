@@ -95,9 +95,14 @@
 
 .hp-cd-num {
   display: block;
-  font-family: var(--hp-heading);
-  font-size: 1.7rem;
+  /* KHÔNG dùng var(--hp-heading): font serif tiêu đề có chữ số kiểu cổ,
+     số 3/9 thò xuống dưới dòng kẻ nhìn như lỗi. Chữ số đếm ngược còn cần
+     đều bề rộng (tabular) để không nhảy giật mỗi giây. */
+  font-family: var(--hp-body);
+  font-size: 1.6rem;
   font-weight: 600;
+  letter-spacing: 0.01em;
+  font-variant-numeric: tabular-nums;
 }
 
 .hp-cd-label {
@@ -559,5 +564,58 @@
   }
   .hp-split-img {
     min-height: 42svh;
+  }
+}
+
+/* ---------- HIỆU ỨNG THẺ (dùng chung) ----------
+   Bốn loại thẻ trong thiệp — gia đình, sự kiện (dạng lưới), sự kiện (dạng dòng
+   thời gian), mừng cưới — đều nâng lên khi rê chuột, giống thẻ mẫu ở kho mẫu.
+   Bóng đổ lấy theo --hp-primary nên mẫu xanh ra bóng xanh, mẫu vàng ra bóng
+   vàng; hardcode màu hồng thì 4/6 mẫu sẽ lệch tông. */
+.hp-family,
+.hp-event-card,
+.hp-tl-card,
+.hp-gift-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.hp-family:hover,
+.hp-event-card:hover,
+.hp-tl-card:hover,
+.hp-gift-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--hp-primary-soft);
+  box-shadow: 0 16px 36px color-mix(in srgb, var(--hp-primary) 22%, transparent);
+}
+
+/* Thiết bị cảm ứng không có hover thật — bỏ hiệu ứng để tránh trạng thái dính
+   lại sau khi chạm. */
+@media (hover: none) {
+  .hp-family:hover,
+  .hp-event-card:hover,
+  .hp-tl-card:hover,
+  .hp-gift-card:hover {
+    transform: none;
+    border-color: var(--hp-line);
+    box-shadow: none;
+  }
+  .hp-event-card:hover {
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.05);
+  }
+}
+
+/* Tôn trọng cài đặt giảm chuyển động của hệ điều hành. */
+@media (prefers-reduced-motion: reduce) {
+  .hp-family,
+  .hp-event-card,
+  .hp-tl-card,
+  .hp-gift-card {
+    transition: none;
+  }
+  .hp-family:hover,
+  .hp-event-card:hover,
+  .hp-tl-card:hover,
+  .hp-gift-card:hover {
+    transform: none;
   }
 }
