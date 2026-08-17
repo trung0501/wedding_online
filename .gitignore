@@ -7,8 +7,13 @@ web/dist/
 *.timestamp-*.mjs
 
 # env / secrets
+# Chặn cả .env.production, .env.staging… — chỉ chừa file .example không chứa mật khẩu.
 .env
+.env.*
+!.env.example
 web/.env
+web/.env.*
+!web/.env.example
 *.local
 
 # Directus runtime data
