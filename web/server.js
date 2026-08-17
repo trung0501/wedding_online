@@ -194,14 +194,26 @@ async function invitationMeta(slug, url) {
   const invId = v?.data?.[0]?.invitation
   if (!invId) return null
 
-  const r = await directus(`/items/invitations/${invId}?fields=groom_name,bride_name,cover_photo,love_story,status`)
+  const r = await directus(
+    `/items/invitations/${invId}?fields=groom_name,bride_name,cover_photo,love_story,status,published_at`,
+  )
   const inv = r?.data
   if (!inv || inv.status !== 'published') return null
 
+  // Ngày hiển thị PHẢI trùng với ngày trên thiệp, nếu không khách share lên Zalo
+  // thấy một ngày, mở thiệp ra thấy ngày khác.
+  // Quy tắc lấy đúng từ BaseTemplate.tsx: ưu tiên Tiệc cưới → sự kiện sớm nhất
+  // → published_at. Sửa một bên thì phải sửa cả bên kia.
   const ev = await directus(
-    `/items/events?filter[invitation][_eq]=${invId}&sort=event_at&limit=1&fields=event_at`,
+    `/items/events?filter[invitation][_eq]=${invId}&sort=event_at&limit=-1&fields=event_at,event_type`,
   ).catch(() => null)
-  const date = fmtDate(ev?.data?.[0]?.event_at)
+  const events = ev?.data ?? []
+  const mainDate =
+    events.find((e) => e.event_type === 'tiec_cuoi')?.event_at ??
+    events.map((e) => e.event_at).filter(Boolean).sort()[0] ??
+    inv.published_at ??
+    null
+  const date = fmtDate(mainDate)
 
   return metaTags({
     title: `${clean(inv.groom_name)} & ${clean(inv.bride_name)}${date ? ' — ' + date : ''}`,
