@@ -9,6 +9,7 @@ import ContactPage from './pages/ContactPage'
 import IntakePage from './pages/IntakePage'
 import TemplatePreview from './pages/TemplatePreview'
 import InvitationPage from './pages/InvitationPage'
+import ManagePage from './pages/ManagePage'
 
 function DemoHost() {
   const Template = resolveTemplate(sampleInvitation.template?.component_key)
@@ -34,6 +35,9 @@ export default function App() {
         <Route path="/lien-he" element={<ContactPage />} />
         <Route path="/dat-thiep" element={<IntakePage />} />
       </Route>
+
+      {/* Trang theo dõi khách mời của cặp đôi — có đăng nhập, thanh riêng */}
+      <Route path="/quan-ly" element={<ManagePage />} />
 
       {/* Xem trước mẫu — có thanh riêng, không dùng header trang bán hàng */}
       <Route path="/mau/:slug" element={<TemplatePreview />} />

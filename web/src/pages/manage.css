@@ -1,0 +1,399 @@
+/* ============================================================
+   Trang /quan-ly — cặp đôi khách hàng theo dõi khách mời.
+   Dùng lại biến màu của trang bán hàng (site.css) cho đồng bộ.
+   ============================================================ */
+
+.mn,
+.mn-login {
+  min-height: 100vh;
+  background: var(--st-bg, #fffafc);
+  font-family: var(--st-sans, 'Be Vietnam Pro', system-ui, sans-serif);
+  color: var(--st-body, #6b585f);
+}
+
+.mn-center {
+  padding: 90px 24px;
+  text-align: center;
+  color: var(--st-muted, #9c8890);
+}
+
+.mn-link {
+  border: none;
+  background: none;
+  color: var(--st-rose, #c96b83);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* ---------- ĐĂNG NHẬP ---------- */
+
+.mn-login {
+  display: grid;
+  place-items: center;
+  padding: 40px 20px;
+}
+
+.mn-login-card {
+  width: 100%;
+  max-width: 420px;
+  padding: 42px 34px 34px;
+  background: #fff;
+  border: 1px solid var(--st-line, #efe1e6);
+  border-radius: 22px;
+  box-shadow: 0 18px 50px rgba(143, 66, 86, 0.1);
+}
+
+.mn-login-eyebrow {
+  margin: 0 0 8px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--st-rose, #c96b83);
+  text-align: center;
+}
+
+.mn-login-title {
+  margin: 0 0 10px;
+  text-align: center;
+  font-family: var(--st-head, 'Playfair Display', serif);
+  font-size: 1.9rem;
+  font-weight: 600;
+  color: var(--st-rose-deep, #8f4256);
+}
+
+.mn-login-desc {
+  margin: 0 0 26px;
+  text-align: center;
+  font-size: 0.93rem;
+  line-height: 1.65;
+  color: var(--st-muted, #9c8890);
+}
+
+.mn-login-help {
+  margin: 18px 0 0;
+  text-align: center;
+  font-size: 0.86rem;
+  color: var(--st-muted, #9c8890);
+}
+
+.mn-login-help a {
+  color: var(--st-rose, #c96b83);
+  font-weight: 600;
+}
+
+.mn-label {
+  display: block;
+  margin: 14px 0 6px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--st-ink, #3d2f34);
+}
+
+.mn-input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--st-line, #efe1e6);
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 1rem;
+  color: var(--st-ink, #3d2f34);
+  background: #fffdfe;
+}
+
+.mn-input:focus {
+  outline: none;
+  border-color: var(--st-rose-soft, #f3d5de);
+  box-shadow: 0 0 0 3px rgba(233, 166, 181, 0.28);
+}
+
+.mn-btn {
+  width: 100%;
+  margin-top: 22px;
+  padding: 13px 26px;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--st-rose, #c96b83), var(--st-rose-deep, #8f4256));
+  color: #fff;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 8px 22px rgba(143, 66, 86, 0.3);
+}
+
+.mn-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.mn-err {
+  margin: 14px 0 0;
+  font-size: 0.88rem;
+  color: #c0392b;
+  text-align: center;
+}
+
+/* ---------- THANH TRÊN ---------- */
+
+.mn-top {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--st-line, #efe1e6);
+}
+
+.mn-top-inner {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 14px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.mn-top-eyebrow {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--st-rose, #c96b83);
+}
+
+.mn-top-user {
+  margin: 2px 0 0;
+  font-size: 0.92rem;
+  color: var(--st-ink, #3d2f34);
+}
+
+.mn-top-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.mn-ghost {
+  padding: 8px 16px;
+  border: 1px solid var(--st-line, #efe1e6);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--st-rose-deep, #8f4256);
+  font-family: inherit;
+  font-size: 0.86rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.18s, background 0.18s;
+  white-space: nowrap;
+}
+
+.mn-ghost:hover {
+  border-color: var(--st-rose-soft, #f3d5de);
+  background: #fdf1f5;
+}
+
+/* ---------- NỘI DUNG ---------- */
+
+.mn-body {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 40px 22px 90px;
+}
+
+.mn-names {
+  margin: 0 0 30px;
+  text-align: center;
+  font-family: var(--st-head, 'Playfair Display', serif);
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  font-weight: 600;
+  color: var(--st-rose-deep, #8f4256);
+}
+
+.mn-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 16px;
+  margin-bottom: 44px;
+}
+
+.mn-stat {
+  padding: 26px 20px;
+  text-align: center;
+  background: #fff;
+  border: 1px solid var(--st-line, #efe1e6);
+  border-radius: 18px;
+}
+
+.mn-stat.is-accent {
+  background: linear-gradient(135deg, #fdeef3, #f8e2ea);
+  border-color: var(--st-rose-soft, #f3d5de);
+}
+
+.mn-stat-num {
+  display: block;
+  /* Font sans + tabular: chữ số serif so le nhìn như lỗi, và số liệu
+     phải thẳng cột khi 4 ô đứng cạnh nhau. */
+  font-size: 2.4rem;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--st-rose-deep, #8f4256);
+  font-variant-numeric: tabular-nums;
+}
+
+.mn-stat-label {
+  display: block;
+  margin-top: 6px;
+  font-size: 0.84rem;
+  color: var(--st-muted, #9c8890);
+}
+
+.mn-section {
+  margin-bottom: 40px;
+}
+
+.mn-h2 {
+  margin: 0 0 16px;
+  font-family: var(--st-head, 'Playfair Display', serif);
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: var(--st-rose-deep, #8f4256);
+}
+
+.mn-empty {
+  margin: 0;
+  padding: 26px;
+  text-align: center;
+  background: #fff;
+  border: 1px dashed var(--st-rose-soft, #f3d5de);
+  border-radius: 16px;
+  color: var(--st-muted, #9c8890);
+  font-size: 0.93rem;
+}
+
+/* ---------- BẢNG KHÁCH ---------- */
+
+.mn-table-wrap {
+  background: #fff;
+  border: 1px solid var(--st-line, #efe1e6);
+  border-radius: 16px;
+  overflow-x: auto;
+}
+
+.mn-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.94rem;
+}
+
+.mn-table th,
+.mn-table td {
+  padding: 13px 18px;
+  text-align: left;
+  border-bottom: 1px solid var(--st-line, #efe1e6);
+  white-space: nowrap;
+}
+
+.mn-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.mn-table th {
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--st-muted, #9c8890);
+  background: #fffafc;
+}
+
+.mn-table tbody tr:hover {
+  background: #fffafc;
+}
+
+.mn-num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.mn-dim {
+  color: var(--st-muted, #9c8890);
+  font-size: 0.88rem;
+}
+
+/* ---------- LỜI CHÚC ---------- */
+
+.mn-wishes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
+}
+
+.mn-wish {
+  padding: 20px 22px;
+  background: #fff;
+  border: 1px solid var(--st-line, #efe1e6);
+  border-radius: 16px;
+}
+
+.mn-wish-msg {
+  margin: 0 0 12px;
+  line-height: 1.7;
+  color: var(--st-ink, #3d2f34);
+}
+
+.mn-wish-meta {
+  margin: 0;
+  font-size: 0.84rem;
+  color: var(--st-muted, #9c8890);
+}
+
+/* ---------- LINK THIỆP ---------- */
+
+.mn-links {
+  display: grid;
+  gap: 10px;
+}
+
+.mn-link-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 14px 18px;
+  background: #fff;
+  border: 1px solid var(--st-line, #efe1e6);
+  border-radius: 14px;
+  flex-wrap: wrap;
+}
+
+.mn-link-label {
+  margin: 0 0 2px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--st-rose, #c96b83);
+}
+
+.mn-link-url {
+  color: var(--st-ink, #3d2f34);
+  font-size: 0.92rem;
+  word-break: break-all;
+}
+
+@media (max-width: 560px) {
+  .mn-top-inner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .mn-stat-num {
+    font-size: 2rem;
+  }
+}
