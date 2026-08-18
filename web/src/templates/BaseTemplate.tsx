@@ -30,6 +30,21 @@ export default function BaseTemplate({ data, theme }: { data: RenderData; theme:
     ...(data.guestbook ?? []).map((g) => ({ id: g.id, name: g.name, message: g.message })),
   ].filter((w) => w.message?.trim())
   const demo = !data.variant
+
+  // ---- Lọc nội dung theo LOẠI LINK khách đang mở ----
+  // Link nhà trai chỉ hiện sự kiện của nhà trai + sự kiện chung; nhà gái ngược lại.
+  // Link khách chung (và bản xem thử mẫu) hiện tất cả.
+  // Bản ghi không ghi rõ `side` thì VẪN HIỆN — thà hiện thừa hơn là ẩn mất địa
+  // điểm tiệc của khách chỉ vì nhân viên quên chọn một ô.
+  const variantType = data.variant?.variant_type ?? 'combined'
+  const forSide = variantType === 'groom' || variantType === 'bride' ? variantType : null
+  const keepSide = (side?: string | null) => !forSide || !side || side === 'both' || side === forSide
+  const shownEvents = events.filter((e) => keepSide(e.side))
+  const shownGifts = gift_accounts.filter((g) => keepSide(g.side))
+
+  // Đếm ngược tính trên TOÀN BỘ sự kiện, không phải danh sách đã lọc: ba link
+  // phải cùng một ngày cưới, và phải khớp với thẻ chia sẻ Zalo do server.js
+  // sinh ra (server.js cũng đọc danh sách đầy đủ).
   const mainDate =
     events.find((e) => e.event_type === 'tiec_cuoi')?.event_at ??
     events.map((e) => e.event_at).filter(Boolean).sort()[0] ??
@@ -97,7 +112,7 @@ export default function BaseTemplate({ data, theme }: { data: RenderData; theme:
   const eventsContent =
     theme.eventsVariant === 'timeline' ? (
       <div className="hp-timeline">
-        {events.map((ev) => (
+        {shownEvents.map((ev) => (
           <div className="hp-tl-item" key={ev.id}>
             <span className="hp-tl-dot" />
             <div className="hp-tl-card">
@@ -118,7 +133,7 @@ export default function BaseTemplate({ data, theme }: { data: RenderData; theme:
       </div>
     ) : (
       <div className="hp-event-grid">
-        {events.map((ev) => (
+        {shownEvents.map((ev) => (
           <div className="hp-event-card" key={ev.id}>
             <h3 className="hp-event-title">{ev.title || eventLabel[ev.event_type ?? ''] || 'Sự kiện'}</h3>
             <p className="hp-event-time">
@@ -156,7 +171,7 @@ export default function BaseTemplate({ data, theme }: { data: RenderData; theme:
       </section>
     ),
     events:
-      events.length > 0 ? (
+      shownEvents.length > 0 ? (
         <section className="hp-section hp-events" key="events">
           {title('Sự kiện cưới')}
           {eventsContent}
@@ -179,7 +194,12 @@ export default function BaseTemplate({ data, theme }: { data: RenderData; theme:
       <section className="hp-section hp-rsvp" key="rsvp">
         {title('Xác nhận tham dự')}
         <p className="hp-rsvp-intro">Sự hiện diện của bạn là niềm vinh hạnh của chúng tôi.</p>
-        <RsvpForm invitationId={inv.id} demo={demo} onSent={(w) => setJustSent((prev) => [w, ...prev])} />
+        <RsvpForm
+          invitationId={inv.id}
+          demo={demo}
+          defaultSide={forSide}
+          onSent={(w) => setJustSent((prev) => [w, ...prev])}
+        />
 
         {wishes.length > 0 && (
           <div className="hp-wishes">
@@ -199,11 +219,11 @@ export default function BaseTemplate({ data, theme }: { data: RenderData; theme:
       </section>
     ),
     gift:
-      gift_accounts.length > 0 ? (
+      shownGifts.length > 0 ? (
         <section className="hp-section hp-gift" key="gift">
           {title('Mừng cưới')}
           <div className="hp-gift-grid">
-            {gift_accounts.map((g) => (
+            {shownGifts.map((g) => (
               <div className="hp-gift-card" key={g.id}>
                 <h3>{g.side === 'groom' ? 'Nhà Trai' : 'Nhà Gái'}</h3>
                 {g.qr_image && <img className="hp-qr" src={assetUrl(g.qr_image, 'qr')} alt="QR chuyển khoản" loading="lazy" />}

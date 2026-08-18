@@ -123,7 +123,9 @@ export function computeStats(rsvps: Rsvp[], guestbook: GuestbookEntry[]): Stats 
     // num_guests là TỔNG số người của lượt đó (gồm cả người điền form).
     totalPeople: yes.reduce((sum, r) => sum + (r.num_guests || 1), 0),
     declined: rsvps.filter((r) => r.attending === 'no').length,
-    messages: rsvps.filter((r) => r.message?.trim()).length + guestbook.filter((g) => g.message?.trim()).length,
+    // Lời chúc chỉ đếm từ guestbook. RsvpForm không còn ghi lời chúc vào
+    // rsvps.message nữa — trước đây ghi cả hai bảng nên mỗi lời chúc bị đếm đôi.
+    messages: guestbook.filter((g) => g.message?.trim()).length,
     groomSide: yes.filter((r) => r.side === 'groom').length,
     brideSide: yes.filter((r) => r.side === 'bride').length,
   }

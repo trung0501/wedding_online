@@ -335,6 +335,24 @@
   color: var(--hp-deep);
 }
 
+/* ---------- Ô CÓ NHÃN TRONG FORM RSVP ----------
+   Ô "số người" trước đây chỉ có placeholder, mà placeholder biến mất ngay khi
+   ô có giá trị — khách mở thiệp ra thấy số 1 trơ trọi, không biết là gì.
+   Nhãn ở ngoài ô thì luôn đọc được. */
+.hp-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.hp-field-label {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--hp-deep);
+}
+
 .hp-rsvp-done {
   max-width: 460px;
   margin: 0 auto;

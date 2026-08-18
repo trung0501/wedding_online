@@ -3,20 +3,33 @@ import type { FormEvent } from 'react'
 import { createItem } from '@directus/sdk'
 import { directus } from '../lib/directus'
 
+export type GuestSide = 'groom' | 'bride'
+
 export default function RsvpForm({
   invitationId,
   demo = false,
+  defaultSide = null,
   onSent,
 }: {
   invitationId: string
   demo?: boolean
+  /**
+   * Khách vào link nhà trai / nhà gái thì đã biết bên rồi — không hỏi lại.
+   * Link khách chung (và bản xem thử mẫu) truyền null, form sẽ hiện thêm một
+   * dòng cho khách tự chọn. Không chọn vẫn gửi được, chỉ là cột "Bên" ở trang
+   * quản lý sẽ trống cho lượt đó.
+   */
+  defaultSide?: GuestSide | null
   onSent?: (entry: { name: string; message: string }) => void
 }) {
   const [name, setName] = useState('')
   const [attending, setAttending] = useState<'yes' | 'no'>('yes')
   const [num, setNum] = useState(1)
+  const [side, setSide] = useState<GuestSide | null>(defaultSide)
   const [message, setMessage] = useState('')
   const [status, setStatus] = useState<'idle' | 'sending' | 'done' | 'error'>('idle')
+
+  const askSide = !defaultSide
 
   async function submit(e: FormEvent) {
     e.preventDefault()
@@ -32,10 +45,13 @@ export default function RsvpForm({
             name,
             attending,
             num_guests: attending === 'yes' ? num : 0,
-            message,
+            side,
+            // CỐ TÌNH không ghi lời chúc vào đây. Lời chúc chỉ có MỘT chỗ duy
+            // nhất là bảng guestbook. Trước đây ghi vào cả hai bảng nên trang
+            // /quan-ly đếm và hiển thị mỗi lời chúc hai lần.
           }),
         )
-        // Lời chúc ghi thêm vào guestbook để hiện lên tường lưu bút.
+        // Lời chúc ghi vào guestbook để hiện lên tường lưu bút.
         // rsvps không mở quyền đọc cho khách mời, guestbook thì có (chỉ bản đã duyệt).
         if (message.trim()) {
           await directus
@@ -78,15 +94,33 @@ export default function RsvpForm({
         </label>
       </div>
       {attending === 'yes' && (
-        <input
-          className="hp-input"
-          type="number"
-          min={1}
-          max={20}
-          value={num}
-          onChange={(e) => setNum(Number(e.target.value))}
-          placeholder="Số người tham dự"
-        />
+        <div className="hp-field">
+          <label className="hp-field-label" htmlFor="hp-num">
+            Số người tham dự (tính cả bạn)
+          </label>
+          <input
+            id="hp-num"
+            className="hp-input"
+            type="number"
+            min={1}
+            max={20}
+            value={num}
+            onChange={(e) => setNum(Number(e.target.value))}
+          />
+        </div>
+      )}
+      {askSide && (
+        <div className="hp-field">
+          <span className="hp-field-label">Bạn là khách của bên nào?</span>
+          <div className="hp-rsvp-row">
+            <label className={`hp-choice ${side === 'groom' ? 'active' : ''}`}>
+              <input type="radio" name="side" checked={side === 'groom'} onChange={() => setSide('groom')} /> Nhà trai
+            </label>
+            <label className={`hp-choice ${side === 'bride' ? 'active' : ''}`}>
+              <input type="radio" name="side" checked={side === 'bride'} onChange={() => setSide('bride')} /> Nhà gái
+            </label>
+          </div>
+        </div>
       )}
       <textarea
         className="hp-input"

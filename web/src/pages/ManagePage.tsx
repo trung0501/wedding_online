@@ -251,10 +251,11 @@ function Dashboard({ data }: { data: ManageData }) {
 
   const yes = rsvps.filter((r) => r.attending === 'yes')
   const no = rsvps.filter((r) => r.attending === 'no')
-  const wishes = [
-    ...rsvps.filter((r) => r.message?.trim()).map((r) => ({ id: r.id, name: r.name, message: r.message, date: r.date_created })),
-    ...guestbook.filter((g) => g.message?.trim()).map((g) => ({ id: g.id, name: g.name, message: g.message, date: g.date_created })),
-  ]
+  // guestbook là nguồn duy nhất của lời chúc. Trước đây gộp thêm rsvps.message
+  // nên mỗi lời chúc hiện hai lần — vì RsvpForm ghi vào cả hai bảng.
+  const wishes = guestbook
+    .filter((g) => g.message?.trim())
+    .map((g) => ({ id: g.id, name: g.name, message: g.message, date: g.date_created }))
 
   return (
     <div className="mn-body">
@@ -278,6 +279,15 @@ function Dashboard({ data }: { data: ManageData }) {
         <Stat label="Báo không đến" value={s.declined} />
         <Stat label="Lời chúc" value={s.messages} />
       </div>
+
+      {/* Chỉ hiện khi thực sự có số liệu: thiệp chỉ dùng link khách chung mà khách
+          không chọn bên thì hai ô này đều 0, hiện ra chỉ làm rối mắt. */}
+      {(s.groomSide > 0 || s.brideSide > 0) && (
+        <div className="mn-stats">
+          <Stat label="Khách nhà trai" value={s.groomSide} />
+          <Stat label="Khách nhà gái" value={s.brideSide} />
+        </div>
+      )}
 
       {variants.length > 0 && (
         <Section title="Link thiệp">

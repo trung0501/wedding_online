@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
+import type { CSSProperties } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { fetchTemplateBySlug, fetchInvitationBySlug } from '../lib/api'
-import { resolveTemplate } from '../templates/registry'
+import { resolveTemplate, resolveTheme } from '../templates/registry'
 import { sampleInvitation } from '../data/sampleInvitation'
 import type { Template, RenderData } from '../types'
 import './gallery.css'
@@ -51,8 +52,20 @@ export default function TemplatePreview() {
 
   const Template = resolveTemplate(template.component_key)
 
+  // Thanh trên ăn theo tông của chính mẫu đang xem. Không có biến nào ở đây thì
+  // CSS rơi về tông hồng mặc định (xem gallery.css, phần PREVIEW).
+  const theme = resolveTheme(template.component_key)
+  const barVars: Record<string, string> = {
+    '--tp-primary': theme.primary,
+    '--tp-primary-soft': theme.primarySoft,
+    '--tp-deep': theme.deep,
+    '--tp-line': theme.line,
+    '--tp-cream': theme.cream,
+    '--tp-heading': theme.heading,
+  }
+
   return (
-    <div className="tp">
+    <div className="tp" style={barVars as CSSProperties}>
       <div className="tp-bar">
         <Link className="tp-back" to="/kho-mau-thiep">
           ← Kho mẫu thiệp

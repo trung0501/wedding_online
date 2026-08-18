@@ -162,7 +162,10 @@
   border-top: 1px solid var(--gl-line);
 }
 
-/* ---------- PREVIEW ---------- */
+/* ---------- PREVIEW ----------
+   Thanh trên chạy theo tông của MẪU ĐANG XEM, không cứng màu hồng nữa.
+   Biến --tp-* do TemplatePreview.tsx bơm vào .tp từ theme của mẫu.
+   Giá trị sau dấu phẩy là tông hồng dự phòng — mẫu thiếu theme vẫn hiển thị bình thường. */
 .tp-bar {
   position: sticky;
   top: 0;
@@ -172,28 +175,31 @@
   justify-content: space-between;
   gap: 12px;
   padding: 12px 18px;
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(8px);
-  border-bottom: 1px solid #f0d4dc;
+  /* Nền lấy màu kem của từng mẫu thay vì trắng tinh — đủ ấm để khớp tông
+     mà vẫn sáng hơn thân thiệp nên thanh vẫn tách bạch.
+     Để ĐỤC, không dùng color-mix: trình duyệt trong ứng dụng Zalo trên máy
+     Android cũ chưa hỗ trợ, gặp là thanh mất nền và chữ dính vào ảnh bìa. */
+  background: var(--tp-cream, #fffdfb);
+  border-bottom: 1px solid var(--tp-line, #f0d4dc);
 }
 
 .tp-back {
-  color: #8f4256;
+  color: var(--tp-deep, #8f4256);
   text-decoration: none;
   font-family: 'Be Vietnam Pro', sans-serif;
   font-size: 0.95rem;
 }
 
 .tp-name {
-  font-family: 'Playfair Display', serif;
-  color: #8f4256;
+  font-family: var(--tp-heading, 'Playfair Display', serif);
+  color: var(--tp-deep, #8f4256);
   font-weight: 600;
 }
 
 .tp-cta {
   padding: 9px 20px;
   border-radius: 999px;
-  background: linear-gradient(135deg, #c96b83, #e9a6b5);
+  background: linear-gradient(135deg, var(--tp-primary, #c96b83), var(--tp-primary-soft, #e9a6b5));
   color: #fff;
   text-decoration: none;
   font-size: 0.9rem;
